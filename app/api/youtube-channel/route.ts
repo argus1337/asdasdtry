@@ -40,17 +40,28 @@ function extractAvatarUrl(html: string): string | null {
 }
 
 function extractChannelTitle(html: string): string | null {
+  // Prioritize patterns that target the main channel, not recommended/related channels
   const patterns = [
+    // Main channel metadata - most reliable
     /"channelMetadataRenderer":\s*{\s*"title":\s*"([^"]+)"/,
-    /<meta\s+property="og:title"\s+content="([^"]+)"/,
+    // OG meta tag - usually refers to main channel
+    /<meta\s+property="og:title"\s+content="([^"]+)"\s*\/?>/,
+    // Title tag - extract channel name before " - YouTube"
     /<title>([^<]+)\s*-\s*YouTube<\/title>/,
+    // ytInitialData patterns - look for main channel
+    /"channelName":\s*"([^"]+)"/,
+    // Fallback - but be careful with this one as it might match related channels
     /"name":\s*"([^"]+)"/,
   ];
 
   for (const pattern of patterns) {
     const match = html.match(pattern);
     if (match && match[1]) {
-      return match[1].trim();
+      const title = match[1].trim();
+      // Filter out common non-channel titles
+      if (!title.includes('YouTube') && !title.includes('Watch') && title.length > 0) {
+        return title;
+      }
     }
   }
 
@@ -58,9 +69,13 @@ function extractChannelTitle(html: string): string | null {
 }
 
 function extractSubscriberCount(html: string): string | null {
-  // Try multiple patterns to find subscriber count - more comprehensive approach
+  // Try multiple patterns to find subscriber count - prioritize main channel data
   const patterns = [
-    // JSON patterns with escaped quotes
+    // Main channel metadata patterns - most reliable
+    /"channelMetadataRenderer":\s*\{[^}]*"subscriberCountText":\s*\{\s*"simpleText":\s*"([^"]+)"/,
+    /"channelMetadataRenderer":\s*\{[^}]*"subscriberCountText":\s*\{\s*"runs":\s*\[\s*\{\s*"text":\s*"([^"]+)"/,
+    
+    // JSON patterns with escaped quotes - but prioritize those near channelMetadataRenderer
     /"subscriberCountText":\s*\{\s*"simpleText":\s*"([^"]+)"/,
     /"subscriberCountText":\s*\{\s*"runs":\s*\[\s*\{\s*"text":\s*"([^"]+)"/,
     /subscriberCountText["\s]*:\s*\{[^}]*simpleText["\s]*:\s*"([^"]+)"/,
@@ -70,7 +85,7 @@ function extractSubscriberCount(html: string): string | null {
     /"subscriberCountText":\s*"([^"]+)"/,
     /"subscriberCount":\s*"([^"]+)"/,
     
-    // English patterns
+    // English patterns - but only if near channel header
     /(\d+(?:[.,]\d+)?[KMB]?)\s*subscribers/i,
     /(\d+(?:[.,]\d+)?[KMB]?)\s*subscriber/i,
     
@@ -171,19 +186,20 @@ function extractSubscriberCount(html: string): string | null {
 }
 
 function checkVerified(html: string): { verified: boolean; type: 'standard' | 'music' | 'artist' | null } {
+  // Focus on main channel verification, not recommended channels
+  // Look for verification badges specifically in channelMetadataRenderer context
+  
   // 1. Музыкальная верификация (нотка) - проверяем первым, так как это более специфичный тип
-  // Ищем паттерны для музыкальной верификации
   const musicPatterns = [
+    // Main channel music verification
+    /"channelMetadataRenderer":\s*\{[^}]*"BADGE_STYLE_TYPE_VERIFIED_MUSIC"/,
+    /"channelMetadataRenderer":\s*\{[^}]*"musicVerifiedBadge"/,
+    // General music patterns
     /"BADGE_STYLE_TYPE_VERIFIED_MUSIC"/,
     /"musicVerifiedBadge"/,
     /verified_music/i,
     /VERIFIED_MUSIC/,
     /"badgeStyle":"BADGE_STYLE_TYPE_VERIFIED_MUSIC"/,
-    // SVG path для музыкальной ноты (разные варианты)
-    /M12\s+3v10\.55c-\.59-\.34-1\.27-\.55-2-\.55-2\.21\s+0-4\s+1\.79-4\s+4s1\.79\s+4\s+4\s+4\s+4-1\.79\s+4-4V7h4V3h-6z/,
-    /M12\s+3v10\.55/,
-    // Альтернативные паттерны для ноты
-    /M12 3v10\.55c-\.59-\.34-1\.27-\.55-2-\.55/,
   ];
   
   for (const pattern of musicPatterns) {
@@ -192,17 +208,9 @@ function checkVerified(html: string): { verified: boolean; type: 'standard' | 'm
     }
   }
   
-  // Также проверяем наличие иконки ноты в SVG или data (более гибкий поиск)
-  if ((html.includes('M12') && html.includes('v10.55') && html.includes('c-.59-.34')) ||
-      (html.includes('M12 3') && html.includes('v10.55'))) {
-    // Убеждаемся что это не стандартная галочка
-    if (!html.includes('M9.4 16.6') && !html.includes('M9 16.17')) {
-      return { verified: true, type: 'music' };
-    }
-  }
-  
   // 2. Верификация артиста
   const artistPatterns = [
+    /"channelMetadataRenderer":\s*\{[^}]*"BADGE_STYLE_TYPE_VERIFIED_ARTIST"/,
     /"BADGE_STYLE_TYPE_VERIFIED_ARTIST"/,
     /"BADGE_STYLE_TYPE_VERIFIED_ARTIST_MUSIC"/,
     /"artistVerifiedBadge"/,
@@ -217,47 +225,38 @@ function checkVerified(html: string): { verified: boolean; type: 'standard' | 'm
   }
   
   // 3. Стандартная верификация (галка) - проверяем только если нет музыкальной
+  // Prioritize main channel verification patterns
   const standardPatterns = [
+    // Main channel standard verification - most reliable
+    /"channelMetadataRenderer":\s*\{[^}]*"isVerified":\s*true/,
+    /"channelMetadataRenderer":\s*\{[^}]*"badgeStyle":"BADGE_STYLE_TYPE_VERIFIED"/,
+    /"channelMetadataRenderer":\s*\{[^}]*"BADGE_STYLE_TYPE_VERIFIED"/,
+    // General patterns
     /"isVerified":\s*true/,
     /"badgeStyle":"BADGE_STYLE_TYPE_VERIFIED"/,
     /"BADGE_STYLE_TYPE_VERIFIED"/,
-    /verification-badge/,
-    /verified-icon/,
-    /yt-icon-verified/,
-    // SVG path для галочки (разные варианты)
-    /M9\.4\s+16\.6L4\.6\s+12l1\.4-1\.4\s+3\.6\s+3\.6L18\.6\s+7l1\.4\s+1\.4z/,
-    /M9\s+16\.17L4\.83\s+12l-1\.42\s+1\.41L9\s+19\s+21\s+7l-1\.41-1\.41z/,
-    // Более общие паттерны для галочки
-    /M9[.\s]+16/,
-    // Проверка на наличие badge без указания типа (обычно это стандартная верификация)
-    /"badges":\s*\[[^\]]*"BADGE_STYLE_TYPE_VERIFIED"/,
   ];
   
-  // Сначала проверяем что это не музыкальная верификация
-  let isMusic = false;
-  for (const musicPattern of musicPatterns) {
-    if (musicPattern.test(html)) {
-      isMusic = true;
-      break;
-    }
-  }
-  // Также проверяем SVG путь ноты
-  if (!isMusic && (html.includes('M12') && html.includes('v10.55') && html.includes('c-.59-.34'))) {
-    isMusic = true;
-  }
-  
-  // Если не музыкальная, проверяем стандартную
-  if (!isMusic) {
-    for (const pattern of standardPatterns) {
-      if (pattern.test(html)) {
-        return { verified: true, type: 'standard' };
+  // Check for standard verification
+  for (const pattern of standardPatterns) {
+    if (pattern.test(html)) {
+      // Make sure it's not music or artist
+      let isMusicOrArtist = false;
+      for (const musicPattern of musicPatterns) {
+        if (musicPattern.test(html)) {
+          isMusicOrArtist = true;
+          break;
+        }
       }
-    }
-    
-    // Дополнительная проверка: если есть упоминание verified, но нет специфичного типа
-    if (html.includes('verified') || html.includes('VERIFIED')) {
-      // Проверяем что это не музыкальная и не артист
-      if (!html.includes('MUSIC') && !html.includes('ARTIST')) {
+      if (!isMusicOrArtist) {
+        for (const artistPattern of artistPatterns) {
+          if (artistPattern.test(html)) {
+            isMusicOrArtist = true;
+            break;
+          }
+        }
+      }
+      if (!isMusicOrArtist) {
         return { verified: true, type: 'standard' };
       }
     }
