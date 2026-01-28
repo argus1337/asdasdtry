@@ -271,7 +271,7 @@ export function ContactSection() {
                   )}
                   <span className="text-xs sm:text-sm md:text-base font-medium">{platform.label}</span>
                   {platform.comingSoon && (
-                    <span className="absolute top-1 right-1 sm:top-2 sm:right-2 text-[10px] sm:text-xs text-purple-400 font-bold bg-purple-400/20 px-1.5 py-0.5 rounded">COMING SOON</span>
+                    <span className="absolute top-0.5 right-0.5 sm:top-2 sm:right-2 text-[8px] sm:text-xs text-purple-400 font-bold bg-purple-400/20 px-1 sm:px-1.5 py-0.5 rounded leading-tight">COMING SOON</span>
                   )}
                 </motion.button>
               ))}
