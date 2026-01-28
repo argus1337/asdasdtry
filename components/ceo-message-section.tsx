@@ -1,20 +1,48 @@
+"use client";
+
+import Image from "next/image";
+import { motion } from "framer-motion";
+
 export function CEOMessageSection() {
   return (
     <section className="py-16 lg:py-24 bg-card/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
           {/* CEO Image */}
-          <div className="flex-shrink-0">
+          <motion.div 
+            className="flex-shrink-0"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
             <div className="relative">
               <div className="w-48 h-48 sm:w-64 sm:h-64 rounded-full bg-gradient-to-br from-primary via-secondary to-accent p-1">
-                <div className="w-full h-full rounded-full bg-card flex items-center justify-center">
-                  <span className="text-6xl sm:text-8xl">👩‍💼</span>
+                <div className="w-full h-full rounded-full bg-card overflow-hidden">
+                  <Image
+                    src="/images/6323aa1bf0aabc841be85f74_jess-3.png"
+                    alt="Jess Flack"
+                    width={256}
+                    height={256}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
               {/* Decorative element */}
-              <div className="absolute -bottom-2 -right-2 w-16 h-16 bg-primary/20 rounded-full blur-xl" />
+              <motion.div 
+                className="absolute -bottom-2 -right-2 w-16 h-16 bg-primary/20 rounded-full blur-xl"
+                animate={{ 
+                  scale: [1, 1.2, 1],
+                  opacity: [0.3, 0.5, 0.3],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
             </div>
-          </div>
+          </motion.div>
 
           {/* Message Content */}
           <div className="flex-1 text-center lg:text-left">

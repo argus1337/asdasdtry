@@ -65,7 +65,7 @@ export default function HowItWorksPage() {
             >
               <Link href="/contact">
                 <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg">
-                  Sold? Let's talk
+                  Ready to start?
                 </Button>
               </Link>
             </motion.div>

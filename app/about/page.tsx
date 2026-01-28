@@ -249,7 +249,7 @@ export default function AboutPage() {
               <Image src="/images/62833b968d2bbbab27a34d29_aerie-seeklogo.com_2_1.svg" alt="Aerie" width={120} height={48} className="h-10 w-auto object-contain" />
             </div>
           </div>
-          <div className="mt-12">
+          <div className="mt-12 text-center">
             <Link href="/clients">
               <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
                 See all our clients

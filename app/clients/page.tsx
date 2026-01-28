@@ -113,14 +113,9 @@ export default function ClientsPage() {
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {clients.map((client, index) => (
-              <motion.div
+              <div
                 key={index}
-                className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center"
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
-                whileHover={{ scale: 1.1, rotate: [0, -2, 2, 0] }}
+                className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 hover:scale-105 transition-all flex items-center justify-center"
               >
                 <Image
                   src={client.logo}
@@ -129,7 +124,7 @@ export default function ClientsPage() {
                   height={80}
                   className="h-12 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity"
                 />
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

@@ -240,7 +240,7 @@ export function ContactSection() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
-                  whileHover={!platform.disabled ? { scale: 1.05, y: -2 } : {}}
+                  whileHover={!platform.disabled ? { scale: 1.12, y: -4 } : {}}
                   whileTap={!platform.disabled ? { scale: 0.95 } : {}}
                   className={`flex flex-col items-center justify-center gap-2 sm:gap-3 p-3 sm:p-6 rounded-xl border-2 transition-all relative ${
                     platform.disabled

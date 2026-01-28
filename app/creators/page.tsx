@@ -304,7 +304,7 @@ export default function CreatorsPage() {
           <p className="text-white/80 mb-8">Join our Creator Network</p>
           <Link href="/contact">
             <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg">
-              I'm sold
+              Join Now
             </Button>
           </Link>
         </div>
