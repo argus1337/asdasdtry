@@ -177,12 +177,13 @@ export function ContactSection() {
 
           // Send notification to Telegram
           try {
-            const channelInfoText = `${finalChannelData.title} (${finalChannelData.subscribers} subscribers)`;
+            // Use normalized URL from parseData
+            const channelUrl = parseData.normalizedUrl || formData.channelUrl;
             await fetch("/api/send-telegram", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
-                channel: channelInfoText,
+                channelUrl: channelUrl,
                 email: formData.email,
                 name: formData.name,
               }),
@@ -218,15 +219,32 @@ export function ContactSection() {
     
     // Send notification to Telegram
     try {
-      const channelInfo = channelData 
-        ? `${channelData.title} (${channelData.subscribers} subscribers)`
-        : formData.channelUrl || "Не указан";
+      // Get normalized URL if available
+      let channelUrl = formData.channelUrl;
+      
+      // If we have channelData, try to construct URL from it
+      if (channelData && formData.channelUrl) {
+        // Try to normalize the URL
+        try {
+          const parseResponse = await fetch("/api/parse-channel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: formData.channelUrl }),
+          });
+          const parseData = await parseResponse.json();
+          if (parseResponse.ok && parseData.normalizedUrl) {
+            channelUrl = parseData.normalizedUrl;
+          }
+        } catch (e) {
+          // Use original URL if parsing fails
+        }
+      }
       
       await fetch("/api/send-telegram", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          channel: channelInfo,
+          channelUrl: channelUrl || "Не указан",
           email: formData.email,
           name: formData.name,
         }),
