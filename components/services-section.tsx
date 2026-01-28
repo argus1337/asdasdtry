@@ -77,14 +77,6 @@ export function ServicesSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.9 }}
             >
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link
-                  href="/contact"
-                  className="inline-block px-8 py-4 text-lg font-semibold text-white gradient-button rounded-xl transition-all whitespace-nowrap"
-                >
-                  Get Started
-                </Link>
-              </motion.div>
               <motion.div whileHover={{ scale: 1.05 }}>
                 <Link
                   href="/how-it-works"
@@ -105,14 +97,45 @@ export function ServicesSection() {
             transition={{ duration: 0.6 }}
           >
             <div className="relative aspect-[4/3] max-w-md mx-auto">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 rounded-3xl border border-border/30 overflow-hidden">
-                <Image
-                  src="/images/60902c3381b69cf1a577e06d_Group_15.png"
-                  alt="CreateSync Services"
-                  fill
-                  className="object-cover opacity-70"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 rounded-3xl border border-border/30 overflow-hidden p-8 flex flex-col justify-center">
+                <div className="space-y-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-2xl font-bold">
+                      1
+                    </div>
+                    <div>
+                      <h3 className="text-white font-semibold">Strategy</h3>
+                      <p className="text-muted-foreground text-sm">Campaign planning</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-secondary to-accent flex items-center justify-center text-2xl font-bold">
+                      2
+                    </div>
+                    <div>
+                      <h3 className="text-white font-semibold">Sourcing</h3>
+                      <p className="text-muted-foreground text-sm">Creator vetting</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-accent to-primary flex items-center justify-center text-2xl font-bold">
+                      3
+                    </div>
+                    <div>
+                      <h3 className="text-white font-semibold">Execution</h3>
+                      <p className="text-muted-foreground text-sm">Campaign management</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary via-secondary to-accent flex items-center justify-center text-2xl font-bold">
+                      4
+                    </div>
+                    <div>
+                      <h3 className="text-white font-semibold">Analysis</h3>
+                      <p className="text-muted-foreground text-sm">Performance reporting</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
