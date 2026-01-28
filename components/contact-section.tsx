@@ -51,7 +51,20 @@ export function ContactSection() {
 
   // Read brand parameter from URL and save to localStorage
   useEffect(() => {
+    // Check URL params first
     const brandParam = searchParams.get("brand");
+    
+    // Also check window.location.search as fallback (for cases when searchParams might not work)
+    if (!brandParam && typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlBrandParam = urlParams.get("brand");
+      if (urlBrandParam) {
+        localStorage.setItem("createsync_brand_ref", urlBrandParam);
+        setBrandRef(urlBrandParam);
+        return;
+      }
+    }
+    
     if (brandParam) {
       // Save to localStorage
       localStorage.setItem("createsync_brand_ref", brandParam);
