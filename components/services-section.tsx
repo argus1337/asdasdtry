@@ -95,39 +95,39 @@ export function ServicesSection() {
             </motion.div>
           </motion.div>
 
-          {/* Right Column - Visual */}
+          {/* Right Column - Process Flow */}
           <motion.div 
-            className="flex-1 w-full"
+            className="flex-1 w-full hidden lg:block"
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="relative aspect-[4/3] max-w-md mx-auto lg:mx-0">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 rounded-3xl border border-border/50 p-6 sm:p-8">
-                <div className="h-full flex flex-col justify-between">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full bg-green-400"></div>
-                      <span className="text-white/70 text-sm">Strategy & Planning</span>
+            <div className="relative max-w-md mx-auto">
+              <div className="space-y-6">
+                {[
+                  { step: "1", title: "Strategy", desc: "We analyze your goals" },
+                  { step: "2", title: "Sourcing", desc: "Find perfect creators" },
+                  { step: "3", title: "Execution", desc: "Manage campaigns" },
+                  { step: "4", title: "Analysis", desc: "Track performance" },
+                ].map((item, index) => (
+                  <motion.div
+                    key={item.step}
+                    className="flex items-start gap-4"
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                  >
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/30 flex items-center justify-center text-white font-bold">
+                      {item.step}
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full bg-blue-400"></div>
-                      <span className="text-white/70 text-sm">Creator Sourcing</span>
+                    <div className="flex-1 pt-2">
+                      <div className="text-white font-semibold mb-1">{item.title}</div>
+                      <div className="text-white/60 text-sm">{item.desc}</div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full bg-purple-400"></div>
-                      <span className="text-white/70 text-sm">Campaign Execution</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full bg-pink-400"></div>
-                      <span className="text-white/70 text-sm">Performance Analysis</span>
-                    </div>
-                  </div>
-                  <div className="mt-6 pt-6 border-t border-border/50">
-                    <p className="text-white/60 text-xs text-center">End-to-end management</p>
-                  </div>
-                </div>
+                  </motion.div>
+                ))}
               </div>
             </div>
           </motion.div>
