@@ -99,7 +99,7 @@ export function ServicesSection() {
             <div className="relative aspect-[4/3] max-w-md mx-auto">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 rounded-3xl border border-border/30 overflow-hidden">
                 <Image
-                  src="/images/60902c3381b69cf1a577e06d_Group_15.png"
+                  src="/images/hand.jpg"
                   alt="Brand and Creator Partnership"
                   fill
                   className="object-cover opacity-90"
