@@ -2,80 +2,25 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { Check } from "lucide-react";
 
 export function ServicesSection() {
-  const serviceCards = [
-    { icon: "📊", title: "Analytics", delay: 0 },
-    { icon: "🎯", title: "Targeting", delay: 0.1 },
-    { icon: "🤝", title: "Matching", delay: 0.2 },
-    { icon: "📈", title: "Growth", delay: 0.3 },
+  const services = [
+    "Strategy development & campaign planning",
+    "Creator sourcing & vetting",
+    "Content creation oversight",
+    "Campaign execution & management",
+    "Performance analysis & reporting",
   ];
 
   return (
     <section id="services" className="py-16 lg:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
-          {/* Left Column - Visual */}
-          <motion.div 
-            className="flex-1 w-full"
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="relative aspect-[4/3] max-w-lg mx-auto lg:mx-0">
-              <motion.div 
-                className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 rounded-3xl"
-                animate={{
-                  backgroundPosition: ["0% 0%", "100% 100%"],
-                }}
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                }}
-              />
-              <div className="absolute inset-4 bg-card/50 backdrop-blur-sm rounded-2xl border border-border flex items-center justify-center">
-                <div className="grid grid-cols-2 gap-4 p-6">
-                  {serviceCards.map((card, index) => (
-                    <motion.div
-                      key={card.title}
-                      className={`bg-${index % 2 === 0 ? 'primary' : index === 1 ? 'secondary' : 'accent'}/10 rounded-xl p-4 text-center cursor-pointer`}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: card.delay }}
-                      whileHover={{ 
-                        scale: 1.1, 
-                        rotate: [0, -5, 5, 0],
-                        transition: { duration: 0.3 }
-                      }}
-                    >
-                      <motion.div 
-                        className="text-3xl mb-2"
-                        animate={{ 
-                          rotate: [0, 10, -10, 0],
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          delay: card.delay,
-                        }}
-                      >
-                        {card.icon}
-                      </motion.div>
-                      <div className="text-sm text-white/80">{card.title}</div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Right Column - Content */}
+          {/* Left Column - Content */}
           <motion.div 
             className="flex-1 text-center lg:text-left"
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
@@ -100,30 +45,110 @@ export function ServicesSection() {
               campaign execution, and performance analysis—we handle everything so you can 
               focus on what matters most: growing your brand.
             </motion.p>
+            
+            {/* Services List */}
             <motion.div 
-              className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start"
+              className="space-y-4 mb-8"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
+              {services.map((service, index) => (
+                <motion.div
+                  key={service}
+                  className="flex items-center gap-3 text-white/90"
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
+                >
+                  <Check className="w-5 h-5 text-pink-400 flex-shrink-0" />
+                  <span>{service}</span>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            <motion.div 
+              className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.9 }}
+            >
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link
-                  href="#contact"
+                  href="/contact"
                   className="inline-block px-8 py-4 text-lg font-semibold text-white gradient-button rounded-xl transition-all whitespace-nowrap"
                 >
-                  Collaborations
+                  Get Started
                 </Link>
               </motion.div>
               <motion.div whileHover={{ scale: 1.05 }}>
                 <Link
-                  href="#how-it-works"
+                  href="/how-it-works"
                   className="text-primary hover:text-primary/80 font-medium underline underline-offset-4 transition-colors"
                 >
                   {"Here's the full breakdown of how it works"}
                 </Link>
               </motion.div>
             </motion.div>
+          </motion.div>
+
+          {/* Right Column - Stats */}
+          <motion.div 
+            className="flex-1 w-full"
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="grid grid-cols-2 gap-6 max-w-md mx-auto lg:mx-0">
+              <motion.div
+                className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+                whileHover={{ scale: 1.05, borderColor: "rgba(168, 85, 247, 0.5)" }}
+              >
+                <div className="text-3xl font-bold text-white mb-2">500+</div>
+                <div className="text-sm text-white/70">Brands Worked With</div>
+              </motion.div>
+              <motion.div
+                className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+                whileHover={{ scale: 1.05, borderColor: "rgba(168, 85, 247, 0.5)" }}
+              >
+                <div className="text-3xl font-bold text-white mb-2">13K+</div>
+                <div className="text-sm text-white/70">Active Creators</div>
+              </motion.div>
+              <motion.div
+                className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.4 }}
+                whileHover={{ scale: 1.05, borderColor: "rgba(168, 85, 247, 0.5)" }}
+              >
+                <div className="text-3xl font-bold text-white mb-2">$1B+</div>
+                <div className="text-sm text-white/70">Managed Spend</div>
+              </motion.div>
+              <motion.div
+                className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.5 }}
+                whileHover={{ scale: 1.05, borderColor: "rgba(168, 85, 247, 0.5)" }}
+              >
+                <div className="text-3xl font-bold text-white mb-2">27B+</div>
+                <div className="text-sm text-white/70">Combined Followers</div>
+              </motion.div>
+            </div>
           </motion.div>
         </div>
       </div>
