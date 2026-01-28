@@ -153,12 +153,22 @@ export default function AboutPage() {
           <h3 className="text-3xl font-bold text-white mb-12 text-left">
             We've worked wonders for more brands than you can shake a wand at.
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center opacity-60">
-            <Image src="/images/62833b96aef969eb76b8faf7_Disney_wordmark_1.svg" alt="Disney" width={120} height={40} className="h-10 w-auto object-contain mx-auto" />
-            <Image src="/images/62833b9627cc9965e37886e9_Amazon_logo_1.svg" alt="Amazon" width={120} height={40} className="h-10 w-auto object-contain mx-auto" />
-            <Image src="/images/64189ad736481a26d5793180_Netflix_2015_logo_1.svg" alt="Netflix" width={120} height={40} className="h-10 w-auto object-contain mx-auto" />
-            <Image src="/images/62bbca1f33f884151ec446a8_Adobe_Corporate_Logo.png" alt="Adobe" width={120} height={40} className="h-10 w-auto object-contain mx-auto" />
-            <Image src="/images/62833b968d2bbbab27a34d29_aerie-seeklogo.com_2_1.svg" alt="Aerie" width={120} height={40} className="h-10 w-auto object-contain mx-auto" />
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-60">
+            <div className="flex items-center justify-center h-12 px-4">
+              <Image src="/images/62833b96aef969eb76b8faf7_Disney_wordmark_1.svg" alt="Disney" width={120} height={48} className="h-10 w-auto object-contain" />
+            </div>
+            <div className="flex items-center justify-center h-12 px-4">
+              <Image src="/images/62833b9627cc9965e37886e9_Amazon_logo_1.svg" alt="Amazon" width={120} height={48} className="h-10 w-auto object-contain" />
+            </div>
+            <div className="flex items-center justify-center h-12 px-4">
+              <Image src="/images/64189ad736481a26d5793180_Netflix_2015_logo_1.svg" alt="Netflix" width={120} height={48} className="h-10 w-auto object-contain" />
+            </div>
+            <div className="flex items-center justify-center h-12 px-4">
+              <Image src="/images/62bbca1f33f884151ec446a8_Adobe_Corporate_Logo.png" alt="Adobe" width={120} height={48} className="h-10 w-auto object-contain" />
+            </div>
+            <div className="flex items-center justify-center h-12 px-4">
+              <Image src="/images/62833b968d2bbbab27a34d29_aerie-seeklogo.com_2_1.svg" alt="Aerie" width={120} height={48} className="h-10 w-auto object-contain" />
+            </div>
           </div>
           <div className="mt-12">
             <Link href="/clients">

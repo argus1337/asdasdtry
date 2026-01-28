@@ -237,10 +237,6 @@ export function ContactSection() {
                       <p className="text-sm text-muted-foreground mt-1">
                         {channelData.subscribers} subscribers
                       </p>
-                      <p className="text-xs text-green-400 mt-2 flex items-center gap-1">
-                        <CheckCircle className="w-4 h-4" />
-                        Channel verified successfully
-                      </p>
                     </div>
                   </div>
                 </div>

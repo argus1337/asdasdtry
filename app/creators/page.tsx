@@ -46,14 +46,26 @@ export default function CreatorsPage() {
 
       {/* Client Logos */}
       <section className="py-12">
-        <div className="container max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-8 items-center opacity-60">
-            <Image src="/images/62833b96aef969eb76b8faf7_Disney_wordmark_1.svg" alt="Disney" width={100} height={40} className="h-8 w-auto object-contain mx-auto" />
-            <Image src="/images/62833b9627cc9965e37886e9_Amazon_logo_1.svg" alt="Amazon" width={100} height={40} className="h-8 w-auto object-contain mx-auto" />
-            <Image src="/images/6658a24915de1e79bf4cac2a_gnc.png" alt="GNC" width={100} height={40} className="h-8 w-auto object-contain mx-auto" />
-            <Image src="/images/6418996a19486aace8d5e835_lyft-logo_1.svg" alt="Lyft" width={100} height={40} className="h-8 w-auto object-contain mx-auto" />
-            <Image src="/images/6658a289fff29b1650697847_crocs.png" alt="Crocs" width={100} height={40} className="h-8 w-auto object-contain mx-auto" />
-            <Image src="/images/6658a0ed71d87a6d8bc6e551_bluechew.png" alt="BlueChew" width={100} height={40} className="h-8 w-auto object-contain mx-auto" />
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-60">
+            <div className="flex items-center justify-center h-12 px-4">
+              <Image src="/images/62833b96aef969eb76b8faf7_Disney_wordmark_1.svg" alt="Disney" width={120} height={48} className="h-8 w-auto object-contain" />
+            </div>
+            <div className="flex items-center justify-center h-12 px-4">
+              <Image src="/images/62833b9627cc9965e37886e9_Amazon_logo_1.svg" alt="Amazon" width={120} height={48} className="h-8 w-auto object-contain" />
+            </div>
+            <div className="flex items-center justify-center h-12 px-4">
+              <Image src="/images/6658a24915de1e79bf4cac2a_gnc.png" alt="GNC" width={120} height={48} className="h-8 w-auto object-contain" />
+            </div>
+            <div className="flex items-center justify-center h-12 px-4">
+              <Image src="/images/6418996a19486aace8d5e835_lyft-logo_1.svg" alt="Lyft" width={120} height={48} className="h-8 w-auto object-contain" />
+            </div>
+            <div className="flex items-center justify-center h-12 px-4">
+              <Image src="/images/6658a289fff29b1650697847_crocs.png" alt="Crocs" width={120} height={48} className="h-8 w-auto object-contain" />
+            </div>
+            <div className="flex items-center justify-center h-12 px-4">
+              <Image src="/images/6658a0ed71d87a6d8bc6e551_bluechew.png" alt="BlueChew" width={120} height={48} className="h-8 w-auto object-contain" />
+            </div>
           </div>
         </div>
       </section>

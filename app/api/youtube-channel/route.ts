@@ -94,12 +94,12 @@ function extractSubscriberCount(html: string): string | null {
         count = count.replace(/\s+/g, ""); // Remove spaces
         
         // Handle Russian format "41 тыс" -> "41K"
-        if (html.includes("тыс") && !count.includes("K") && !count.includes("M")) {
-          // Check if there's "тыс" nearby in the original match
-          const context = match[0];
-          if (context.includes("тыс")) {
-            count = count + "K";
-          }
+        // Check if there's "тыс" nearby in the original match context
+        const context = match[0];
+        if (context.includes("тыс") && !count.includes("K") && !count.includes("M")) {
+          // Extract just the number part
+          const numOnly = count.replace(/[^\d.]/g, "");
+          count = numOnly + "K";
         }
         
         // Handle Russian format "млн" -> "M"
@@ -170,36 +170,80 @@ function extractSubscriberCount(html: string): string | null {
 
 function checkVerified(html: string): { verified: boolean; type: 'standard' | 'music' | 'artist' | null } {
   // 1. Музыкальная верификация (нотка) - проверяем первым, так как это более специфичный тип
-  const hasMusicVerification = html.includes('"BADGE_STYLE_TYPE_VERIFIED_MUSIC"') ||
-                               html.includes('"musicVerifiedBadge"') ||
-                               html.includes('verified_music') ||
-                               html.includes('VERIFIED_MUSIC');
+  // Ищем паттерны для музыкальной верификации
+  const musicPatterns = [
+    /"BADGE_STYLE_TYPE_VERIFIED_MUSIC"/,
+    /"musicVerifiedBadge"/,
+    /verified_music/i,
+    /VERIFIED_MUSIC/,
+    /"badgeStyle":"BADGE_STYLE_TYPE_VERIFIED_MUSIC"/,
+    // SVG path для музыкальной ноты (разные варианты)
+    /M12\s+3v10\.55c-\.59-\.34-1\.27-\.55-2-\.55-2\.21\s+0-4\s+1\.79-4\s+4s1\.79\s+4\s+4\s+4\s+4-1\.79\s+4-4V7h4V3h-6z/,
+    /M12\s+3v10\.55/,
+    // Альтернативные паттерны для ноты
+    /M12 3v10\.55c-\.59-\.34-1\.27-\.55-2-\.55/,
+  ];
   
-  if (hasMusicVerification) {
-    return { verified: true, type: 'music' };
+  for (const pattern of musicPatterns) {
+    if (pattern.test(html)) {
+      return { verified: true, type: 'music' };
+    }
+  }
+  
+  // Также проверяем наличие иконки ноты в SVG или data (более гибкий поиск)
+  if ((html.includes('M12') && html.includes('v10.55') && html.includes('c-.59-.34')) ||
+      (html.includes('M12 3') && html.includes('v10.55'))) {
+    // Убеждаемся что это не стандартная галочка
+    if (!html.includes('M9.4 16.6') && !html.includes('M9 16.17')) {
+      return { verified: true, type: 'music' };
+    }
   }
   
   // 2. Верификация артиста
-  const hasArtistVerification = html.includes('"BADGE_STYLE_TYPE_VERIFIED_ARTIST"') ||
-                                html.includes('"BADGE_STYLE_TYPE_VERIFIED_ARTIST_MUSIC"') ||
-                                html.includes('"artistVerifiedBadge"') ||
-                                html.includes('verified_artist') ||
-                                html.includes('VERIFIED_ARTIST');
+  const artistPatterns = [
+    /"BADGE_STYLE_TYPE_VERIFIED_ARTIST"/,
+    /"BADGE_STYLE_TYPE_VERIFIED_ARTIST_MUSIC"/,
+    /"artistVerifiedBadge"/,
+    /verified_artist/i,
+    /VERIFIED_ARTIST/,
+  ];
   
-  if (hasArtistVerification) {
-    return { verified: true, type: 'artist' };
+  for (const pattern of artistPatterns) {
+    if (pattern.test(html)) {
+      return { verified: true, type: 'artist' };
+    }
   }
   
-  // 3. Стандартная верификация (галка)
-  const hasStandardVerification = html.includes('"isVerified":true') || 
-                                  (html.includes('"badges"') && html.includes('"BADGE_STYLE_TYPE_VERIFIED"')) ||
-                                  html.includes('verification-badge') ||
-                                  html.includes('verified-icon') ||
-                                  html.includes('yt-icon-verified') ||
-                                  html.includes('M9.4 16.6L4.6 12l1.4-1.4 3.6 3.6L18.6 7l1.4 1.4z'); // SVG path для галочки
+  // 3. Стандартная верификация (галка) - проверяем только если нет музыкальной
+  const standardPatterns = [
+    /"isVerified":\s*true/,
+    /"badgeStyle":"BADGE_STYLE_TYPE_VERIFIED"/,
+    /verification-badge/,
+    /verified-icon/,
+    /yt-icon-verified/,
+    // SVG path для галочки
+    /M9\.4\s+16\.6L4\.6\s+12l1\.4-1\.4\s+3\.6\s+3\.6L18\.6\s+7l1\.4\s+1\.4z/,
+    /M9\s+16\.17L4\.83\s+12l-1\.42\s+1\.41L9\s+19\s+21\s+7l-1\.41-1\.41z/,
+  ];
   
-  if (hasStandardVerification) {
-    return { verified: true, type: 'standard' };
+  for (const pattern of standardPatterns) {
+    if (pattern.test(html)) {
+      // Убеждаемся что это не музыкальная верификация
+      let isMusic = false;
+      for (const musicPattern of musicPatterns) {
+        if (musicPattern.test(html)) {
+          isMusic = true;
+          break;
+        }
+      }
+      // Также проверяем SVG путь ноты
+      if (!isMusic && (html.includes('M12') && html.includes('v10.55') && html.includes('c-.59-.34'))) {
+        isMusic = true;
+      }
+      if (!isMusic) {
+        return { verified: true, type: 'standard' };
+      }
+    }
   }
   
   return { verified: false, type: null };
