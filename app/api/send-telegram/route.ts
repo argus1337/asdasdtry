@@ -63,24 +63,61 @@ async function getCountryByIP(ip: string): Promise<string | null> {
 export async function POST(request: NextRequest) {
   try {
     // Check origin/referer to prevent direct API calls
+    // But allow same-origin requests (when origin is null) and requests from allowed domains
     const origin = request.headers.get("origin");
     const referer = request.headers.get("referer");
+    const host = request.headers.get("host");
+    
+    // Build allowed origins list
     const allowedOrigins = [
       process.env.NEXT_PUBLIC_SITE_URL,
       "http://localhost:3000",
       "https://localhost:3000",
+      "http://127.0.0.1:3000",
+      "https://127.0.0.1:3000",
     ].filter(Boolean);
 
-    // Allow requests from same origin or if origin is not set (same-site request)
-    const isAllowedOrigin = !origin || allowedOrigins.some(allowed => origin.includes(allowed));
-    const isAllowedReferer = !referer || allowedOrigins.some(allowed => referer.includes(allowed));
+    // Same-origin requests don't send Origin header, so if origin is null, it's likely from the same site
+    const isSameOrigin = !origin;
+    
+    // Check if origin matches allowed domains
+    const isAllowedOrigin = origin && allowedOrigins.some(allowed => {
+      const allowedDomain = allowed.replace(/^https?:\/\//, '').split('/')[0];
+      return origin.includes(allowedDomain);
+    });
+    
+    // Check if referer matches allowed domains
+    const isAllowedReferer = referer && allowedOrigins.some(allowed => {
+      const allowedDomain = allowed.replace(/^https?:\/\//, '').split('/')[0];
+      return referer.includes(allowedDomain);
+    });
+    
+    // Check if host matches (for same-origin requests)
+    const isAllowedHost = host && allowedOrigins.some(allowed => {
+      const allowedDomain = allowed.replace(/^https?:\/\//, '').split('/')[0];
+      return host === allowedDomain || host.includes(allowedDomain.split(':')[0]);
+    });
 
-    if (!isAllowedOrigin && !isAllowedReferer) {
-      console.warn("Blocked request from unauthorized origin:", origin, referer);
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 403 }
-      );
+    // Block only if it's clearly an external request
+    // Allow if: same-origin OR origin/referer/host matches allowed domains
+    if (!isSameOrigin && !isAllowedOrigin && !isAllowedReferer && !isAllowedHost) {
+      // Additional check: allow localhost patterns for development
+      const isLocalhost = (referer && (
+        referer.includes('localhost') || 
+        referer.includes('127.0.0.1') ||
+        referer.includes('0.0.0.0')
+      )) || (host && (
+        host.includes('localhost') ||
+        host.includes('127.0.0.1')
+      ));
+      
+      if (!isLocalhost) {
+        console.warn("Blocked request from unauthorized origin:", { origin, referer, host });
+        return NextResponse.json(
+          { error: "Unauthorized" },
+          { status: 403 }
+        );
+      }
     }
 
     const body = await request.json();
