@@ -68,7 +68,7 @@ function extractChannelTitle(html: string): string | null {
   return null;
 }
 
-function extractSubscriberCount(html: string, debugInfo?: any): string | null {
+function extractSubscriberCount(html: string, debugInfo?: any, channelTitle?: string): string | null {
   console.log("=== extractSubscriberCount START ===");
   const debugMode = !!debugInfo;
   // Try multiple patterns to find subscriber count - prioritize main channel data
@@ -144,11 +144,21 @@ function extractSubscriberCount(html: string, debugInfo?: any): string | null {
     }
   }
   
-  // Sort by: 1) isMainChannel flag, 2) position (LATER in HTML = main channel, recommended channels come first), 3) pattern index
+  // Sort by: 1) matches channel title in context, 2) isMainChannel flag, 3) position (LATER in HTML = main channel), 4) pattern index
   allMatches.sort((a, b) => {
+    // If we have channel title, prefer matches that have the title nearby
+    if (channelTitle) {
+      const aHasTitle = a.context.toLowerCase().includes(channelTitle.toLowerCase().substring(0, 10));
+      const bHasTitle = b.context.toLowerCase().includes(channelTitle.toLowerCase().substring(0, 10));
+      if (aHasTitle !== bHasTitle) {
+        return aHasTitle ? -1 : 1; // Prefer matches with channel title
+      }
+    }
+    
     if (a.isMainChannel !== b.isMainChannel) {
       return a.isMainChannel ? -1 : 1; // Prefer main channel matches
     }
+    
     // Main channel usually appears LATER in HTML (after recommended channels section)
     // So prefer matches with HIGHER position (later in HTML)
     if (Math.abs(a.position - b.position) > 10000) {
@@ -474,6 +484,7 @@ export async function POST(request: NextRequest) {
         // Extract title from metadata (most reliable)
         if (ytInitialData?.metadata?.channelMetadataRenderer?.title) {
           title = ytInitialData.metadata.channelMetadataRenderer.title;
+          if (debugMode) debugInfo.channelTitle = title;
           console.log("=== Title from ytInitialData.metadata ===", title);
         }
         
@@ -542,7 +553,7 @@ export async function POST(request: NextRequest) {
             }
             
             // Verification badges
-            if (channelHeader.badges && Array.isArray(channelHeader.badges)) {
+            if (channelHeader.badges && Array.isArray(channelHeader.badges) && channelHeader.badges.length > 0) {
               if (debugMode) debugInfo.badgesFound = channelHeader.badges.length;
               for (const badge of channelHeader.badges) {
                 const style = badge?.metadataBadgeRenderer?.style;
@@ -562,9 +573,13 @@ export async function POST(request: NextRequest) {
                 }
               }
             } else {
-              // Check for verification in other places
+              // No badges found - check for verification in other places
               if (channelHeader.isVerified === true) {
                 verification = { verified: true, type: 'standard' };
+              } else {
+                // If badgesFound is 0 and no isVerified flag, channel is not verified
+                if (debugMode) debugInfo.noBadgesFound = true;
+                verification = { verified: false, type: null };
               }
             }
           }
@@ -611,13 +626,15 @@ export async function POST(request: NextRequest) {
           }
           
           // Verification badges (only from main channel header)
-          if (header.badges && Array.isArray(header.badges)) {
+          if (header.badges && Array.isArray(header.badges) && header.badges.length > 0) {
             if (debugMode) debugInfo.badgesFound = header.badges.length;
             console.log("Badges array length:", header.badges.length);
             for (const badge of header.badges) {
               const style = badge?.metadataBadgeRenderer?.style;
-              if (debugMode) debugInfo.badgeStyles = debugInfo.badgeStyles || [];
-              debugInfo.badgeStyles.push(style);
+              if (debugMode) {
+                debugInfo.badgeStyles = debugInfo.badgeStyles || [];
+                debugInfo.badgeStyles.push(style);
+              }
               console.log("Badge style:", style);
               if (style === "BADGE_STYLE_TYPE_VERIFIED_MUSIC") {
                 verification = { verified: true, type: 'music' };
@@ -634,8 +651,13 @@ export async function POST(request: NextRequest) {
               }
             }
           } else {
-            if (debugMode) debugInfo.badgesFound = 0;
+            if (debugMode) {
+              debugInfo.badgesFound = 0;
+              debugInfo.noBadgesFound = true;
+            }
             console.log("No badges array found in header");
+            // If no badges found, channel is not verified
+            verification = { verified: false, type: null };
           }
         } else {
           if (debugMode) debugInfo.headerFound = false;
@@ -657,13 +679,18 @@ export async function POST(request: NextRequest) {
       console.log("=== Avatar from HTML ===", avatar ? "Found" : "Not found");
     }
     if (!subscriberCount) {
-      subscriberCount = extractSubscriberCount(html, debugMode ? debugInfo : undefined);
+      subscriberCount = extractSubscriberCount(html, debugMode ? debugInfo : undefined, title || undefined);
       console.log("=== Subscriber count from HTML ===", subscriberCount);
     }
     // Only check verification from HTML if we didn't get it from ytInitialData
-    if (!verification.verified) {
+    // But if badgesFound is 0, channel is definitely not verified
+    if (!verification.verified && (!debugMode || !debugInfo.noBadgesFound)) {
       verification = checkVerified(html);
       console.log("=== Verification from HTML ===", verification);
+    } else if (debugMode && debugInfo.noBadgesFound) {
+      // If we explicitly found no badges, don't check HTML
+      verification = { verified: false, type: null };
+      console.log("=== No badges found, channel not verified ===");
     }
     
     console.log("=== FINAL RESULT ===");
