@@ -215,10 +215,10 @@ export function ContactSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 text-balance">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-balance px-2 sm:px-0">
             Join the <span className="gradient-text">Creator Network</span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-2 sm:px-0">
             Connect with top brands and monetize your content. Apply now to join our exclusive creator network.
           </p>
         </motion.div>
@@ -226,10 +226,10 @@ export function ContactSection() {
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Platform Selection */}
           <div>
-            <label className="block text-sm font-medium text-white mb-4">
+            <label className="block text-sm sm:text-base font-medium text-white mb-3 sm:mb-4">
               Select your primary platform
             </label>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">
               {platforms.map((platform, index) => (
                 <motion.button
                   key={platform.id}
@@ -242,7 +242,7 @@ export function ContactSection() {
                   transition={{ duration: 0.3, delay: index * 0.1 }}
                   whileHover={!platform.disabled ? { scale: 1.05, y: -2 } : {}}
                   whileTap={!platform.disabled ? { scale: 0.95 } : {}}
-                  className={`flex flex-col items-center justify-center gap-3 p-6 rounded-xl border-2 transition-all relative ${
+                  className={`flex flex-col items-center justify-center gap-2 sm:gap-3 p-3 sm:p-6 rounded-xl border-2 transition-all relative ${
                     platform.disabled
                       ? "border-border/30 bg-card/20 opacity-50 cursor-not-allowed"
                       : formData.platform === platform.id
@@ -251,15 +251,15 @@ export function ContactSection() {
                   }`}
                 >
                   {platform.id === "tiktok" && (
-                    <TikTokIcon className="w-8 h-8" />
+                    <TikTokIcon className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
                   )}
                   {platform.id === "instagram" && (
-                    <Instagram className="w-8 h-8" />
+                    <Instagram className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
                   )}
                   {platform.id === "youtube" && (
-                    <Youtube className="w-8 h-8" />
+                    <Youtube className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
                   )}
-                  <span className="font-medium">{platform.label}</span>
+                  <span className="text-xs sm:text-sm md:text-base font-medium">{platform.label}</span>
                   {platform.comingSoon && (
                     <span className="absolute top-2 right-2 text-xs text-purple-400 font-semibold">Coming Soon</span>
                   )}
@@ -281,15 +281,15 @@ export function ContactSection() {
                   <label className="block text-sm font-medium text-white mb-2">
                     YouTube Channel URL
                   </label>
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     <input
                       type="text"
                       value={formData.channelUrl}
                       onChange={(e) =>
                         setFormData({ ...formData, channelUrl: e.target.value })
                       }
-                      className="flex-1 px-4 py-3 bg-input border border-border rounded-xl text-white placeholder:text-white/40 focus:border-primary focus:bg-input/80 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-                      placeholder="https://youtube.com/@yourchannel or @yourchannel"
+                      className="flex-1 px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base bg-input border border-border rounded-xl text-white placeholder:text-white/40 focus:border-primary focus:bg-input/80 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                      placeholder="@yourchannel or full URL"
                     />
                     <motion.button
                       type="button"
@@ -297,20 +297,24 @@ export function ContactSection() {
                       disabled={isLoading || !formData.channelUrl}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="px-6 py-3 font-semibold text-white gradient-button rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-semibold text-white gradient-button rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {isLoading ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin" />
-                          Checking...
+                          <span className="hidden sm:inline">Checking...</span>
+                          <span className="sm:hidden">Checking</span>
                         </>
                       ) : (
-                        "Check Channel"
+                        <>
+                          <span className="hidden sm:inline">Check Channel</span>
+                          <span className="sm:hidden">Check</span>
+                        </>
                       )}
                     </motion.button>
                   </div>
                   <motion.p 
-                    className="mt-2 text-xs text-white/60"
+                    className="mt-2 text-xs sm:text-sm text-white/60 px-1 leading-relaxed"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3 }}
@@ -396,7 +400,7 @@ export function ContactSection() {
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    className="w-full px-4 py-3 bg-input border border-border rounded-xl text-white placeholder:text-white/40 focus:border-primary focus:bg-input/80 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-input border border-border rounded-xl text-white placeholder:text-white/40 focus:border-primary focus:bg-input/80 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                     placeholder="Your full name"
                     required
                   />
@@ -415,7 +419,7 @@ export function ContactSection() {
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
-                    className="w-full px-4 py-3 bg-input border border-border rounded-xl text-white placeholder:text-white/40 focus:border-primary focus:bg-input/80 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-input border border-border rounded-xl text-white placeholder:text-white/40 focus:border-primary focus:bg-input/80 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                     placeholder="you@email.com"
                     required
                   />
@@ -435,7 +439,7 @@ export function ContactSection() {
                   onChange={(e) =>
                     setFormData({ ...formData, phone: e.target.value })
                   }
-                  className="w-full px-4 py-3 bg-input border border-border rounded-xl text-white placeholder:text-white/40 focus:border-primary focus:bg-input/80 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-input border border-border rounded-xl text-white placeholder:text-white/40 focus:border-primary focus:bg-input/80 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                   placeholder="+1 (555) 000-0000"
                   required
                 />
@@ -460,7 +464,7 @@ export function ContactSection() {
                       transition={{ duration: 0.3, delay: index * 0.1 }}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className={`flex-1 px-6 py-3 rounded-xl border-2 font-medium transition-all ${
+                      className={`flex-1 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border-2 font-medium transition-all ${
                         formData.hasAgency === option
                           ? "border-primary bg-primary/10 text-white"
                           : "border-border bg-card/50 text-white/70 hover:border-primary/50"
@@ -490,7 +494,7 @@ export function ContactSection() {
                       transition={{ duration: 0.3, delay: index * 0.1 }}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className={`flex-1 px-6 py-3 rounded-xl border-2 font-medium transition-all ${
+                      className={`flex-1 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border-2 font-medium transition-all ${
                         formData.hasBrandDeals === option
                           ? "border-primary bg-primary/10 text-white"
                           : "border-border bg-card/50 text-white/70 hover:border-primary/50"
@@ -513,7 +517,7 @@ export function ContactSection() {
                   type="submit"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-12 py-4 text-lg font-semibold text-white gradient-button rounded-xl transition-all"
+                  className="w-full sm:w-auto px-6 sm:px-12 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white gradient-button rounded-xl transition-all"
                 >
                   Submit Application
                 </motion.button>

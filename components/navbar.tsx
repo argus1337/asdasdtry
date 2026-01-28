@@ -89,7 +89,7 @@ export function Navbar() {
             whileTap={{ scale: 0.95 }}
           >
             <Link href="/" className="flex items-center">
-              <span className="text-2xl font-bold gradient-text">CreateSync</span>
+              <span className="text-xl sm:text-2xl font-bold gradient-text">CreateSync</span>
             </Link>
           </motion.div>
 

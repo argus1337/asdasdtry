@@ -47,11 +47,11 @@ export function HeroSection() {
             <span className="inline-block text-xs font-semibold uppercase tracking-widest text-primary mb-4">
               Influencer Marketing Agency
             </span>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-balance">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 sm:mb-6 text-balance px-2 sm:px-0">
               <span className="gradient-text">Accelerate</span> your influencer
               marketing machine
             </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
+            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-6 sm:mb-8 max-w-xl mx-auto lg:mx-0 px-2 sm:px-0">
               We connect brands with the perfect creators to build authentic
               partnerships that drive real results. From TikTok to Instagram to
               YouTube, we manage every aspect of your influencer campaigns.
@@ -59,10 +59,11 @@ export function HeroSection() {
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              className="px-2 sm:px-0"
             >
               <Link
                 href="#contact"
-                className="inline-block px-8 py-4 text-lg font-semibold text-white gradient-button rounded-xl transition-all whitespace-nowrap"
+                className="inline-block w-full sm:w-auto text-center px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white gradient-button rounded-xl transition-all"
               >
                 Get started!
               </Link>
