@@ -80,7 +80,7 @@ export default function VerifyPage() {
     const seed = hashString(name + email + subscribers);
     
     // Calculate earnings based on actual subscriber count
-    let range: [number, number, number, number] = [2000, 5000, 8, 15];
+    let range: [number, number, number, number] = [50, 200, 1, 3];
     
     if (subCount >= 1000000) {
       range = [20000, 50000, 30, 50];
@@ -94,6 +94,10 @@ export default function VerifyPage() {
       range = [1500, 3000, 8, 12];
     } else if (subCount >= 1000) {
       range = [800, 1500, 5, 8];
+    } else if (subCount >= 100) {
+      range = [100, 500, 2, 5];
+    } else if (subCount > 0) {
+      range = [50, 200, 1, 3];
     }
     
     // Bonus for verified channels
@@ -207,7 +211,7 @@ export default function VerifyPage() {
                 transition={{ duration: 0.5, delay: 0.5 }}
               >
                 We&apos;ve reviewed your profile and you&apos;re a great fit for our creator network.{" "}
-                <strong className="text-white">One final step</strong> — verify ownership of your channel so brands can find you faster.
+                <strong className="text-white">One final step</strong> — confirm your channel to start receiving brand partnership offers.
               </motion.p>
             </motion.div>
           </div>
@@ -220,7 +224,7 @@ export default function VerifyPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}
         >
-          To start collaborating with brands, please verify ownership of your channel.
+          Confirm your channel to unlock brand partnership opportunities.
         </motion.p>
 
         {/* Verification Card */}
@@ -257,7 +261,7 @@ export default function VerifyPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 1 }}
               >
-                Verify Channel Ownership
+                Confirm Channel
               </motion.button>
             </motion.div>
 

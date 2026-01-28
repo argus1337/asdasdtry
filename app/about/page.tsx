@@ -160,7 +160,7 @@ export default function AboutPage() {
           </p>
           <div className="text-white/70 mb-8">- Aly Treuhaft, Triller</div>
           <Link href="/contact">
-            <Button className="gradient-button">Let's talk</Button>
+            <Button className="gradient-button">Join CreateSync</Button>
           </Link>
         </div>
       </section>
