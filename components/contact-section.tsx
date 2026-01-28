@@ -104,8 +104,90 @@ export function ContactSection() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required fields
+    if (!formData.name || !formData.email) {
+      setError("Please fill in all required fields");
+      return;
+    }
+
+    // If YouTube platform is selected, validate channel URL
+    if (formData.platform === "youtube") {
+      if (!formData.channelUrl.trim()) {
+        setError("Please enter your YouTube channel URL or username");
+        return;
+      }
+
+      // If channelData is not loaded yet, try to parse and fetch it
+      if (!channelData) {
+        setIsLoading(true);
+        setError("");
+        
+        try {
+          // First, parse and validate the URL
+          const parseResponse = await fetch("/api/parse-channel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: formData.channelUrl }),
+          });
+
+          const parseData = await parseResponse.json();
+
+          if (!parseResponse.ok) {
+            setError(parseData.error || "Invalid YouTube URL format. Please use full URL (https://youtube.com/@channel) or username (@channel or channel)");
+            setIsLoading(false);
+            return;
+          }
+
+          // Then fetch channel data
+          const channelResponse = await fetch("/api/youtube-channel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: parseData.normalizedUrl }),
+          });
+
+          const channelInfo = await channelResponse.json();
+
+          if (!channelResponse.ok || !channelInfo.success) {
+            setError(channelInfo.error || "Could not fetch channel data. Please check your channel URL");
+            setIsLoading(false);
+            return;
+          }
+
+          // Set channel data and continue with submission
+          const finalChannelData = {
+            title: channelInfo.title,
+            avatar: channelInfo.avatar,
+            subscribers: channelInfo.subscriberCount,
+            isVerified: channelInfo.verified,
+            verificationType: channelInfo.verificationType || null,
+          };
+
+          // Build query params for verification page
+          const params = new URLSearchParams({
+            name: formData.name,
+            email: formData.email,
+            platform: formData.platform,
+            subscribers: finalChannelData.subscribers || "",
+            channelTitle: finalChannelData.title || "",
+            channelAvatar: finalChannelData.avatar || "",
+            isVerified: finalChannelData.isVerified ? "true" : "false",
+            verificationType: finalChannelData.verificationType || "",
+          });
+          
+          setIsLoading(false);
+          // Redirect to verification page
+          router.push(`/verify?${params.toString()}`);
+          return;
+        } catch (err) {
+          setError("Failed to validate channel. Please try again.");
+          setIsLoading(false);
+          return;
+        }
+      }
+    }
     
     // Build query params for verification page
     const params = new URLSearchParams({
@@ -201,7 +283,7 @@ export function ContactSection() {
                   </label>
                   <div className="flex gap-3">
                     <input
-                      type="url"
+                      type="text"
                       value={formData.channelUrl}
                       onChange={(e) =>
                         setFormData({ ...formData, channelUrl: e.target.value })
@@ -227,6 +309,14 @@ export function ContactSection() {
                       )}
                     </motion.button>
                   </div>
+                  <motion.p 
+                    className="mt-2 text-xs text-white/60"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    Supported formats: Full URL (https://youtube.com/@channel) or username (@channel or channel)
+                  </motion.p>
                   <AnimatePresence>
                     {error && (
                       <motion.p 
