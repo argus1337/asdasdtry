@@ -74,11 +74,11 @@ export function ContactSection() {
         return;
       }
 
-      // Then fetch channel data
+      // Then fetch channel data (add debug=true to see parsing details)
       const channelResponse = await fetch("/api/youtube-channel", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: parseData.normalizedUrl }),
+        body: JSON.stringify({ url: parseData.normalizedUrl, debug: true }),
       });
 
       const channelInfo = await channelResponse.json();
@@ -86,7 +86,21 @@ export function ContactSection() {
       if (!channelResponse.ok || !channelInfo.success) {
         setError(channelInfo.error || "Could not fetch channel data");
         setIsLoading(false);
+        // Log debug info if available
+        if (channelInfo.debug) {
+          console.log("=== DEBUG INFO (Error) ===", JSON.stringify(channelInfo.debug, null, 2));
+        }
         return;
+      }
+
+      // Log debug info if available
+      if (channelInfo.debug) {
+        console.log("=== DEBUG INFO ===", JSON.stringify(channelInfo.debug, null, 2));
+        // Also show in alert for easy viewing on Vercel
+        alert("Debug info logged to console. Check browser console (F12) for details.\n\n" + 
+              "Subscriber source: " + (channelInfo.debug.subscriberSource || "unknown") + "\n" +
+              "Header found: " + (channelInfo.debug.headerFound ? "yes" : "no") + "\n" +
+              "Badges found: " + (channelInfo.debug.badgesFound || 0));
       }
 
       setChannelData({

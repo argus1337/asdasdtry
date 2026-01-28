@@ -71,12 +71,20 @@ function extractChannelTitle(html: string): string | null {
 function extractSubscriberCount(html: string): string | null {
   console.log("=== extractSubscriberCount START ===");
   // Try multiple patterns to find subscriber count - prioritize main channel data
+  // IMPORTANT: Look for patterns that are specifically in the main channel header, not in recommended channels
   const patterns = [
-    // Main channel metadata patterns - most reliable
+    // Main channel header patterns - most reliable (c4TabbedHeaderRenderer)
+    /"c4TabbedHeaderRenderer":\s*\{[^}]*"subscriberCountText":\s*\{\s*"simpleText":\s*"([^"]+)"/,
+    /"c4TabbedHeaderRenderer":\s*\{[^}]*"subscriberCountText":\s*\{\s*"runs":\s*\[\s*\{\s*"text":\s*"([^"]+)"/,
+    
+    // Main channel metadata patterns
     /"channelMetadataRenderer":\s*\{[^}]*"subscriberCountText":\s*\{\s*"simpleText":\s*"([^"]+)"/,
     /"channelMetadataRenderer":\s*\{[^}]*"subscriberCountText":\s*\{\s*"runs":\s*\[\s*\{\s*"text":\s*"([^"]+)"/,
     
-    // JSON patterns with escaped quotes - but prioritize those near channelMetadataRenderer
+    // contentMetadataViewModel structure (from API response)
+    /"contentMetadataViewModel":\s*\{[^}]*"metadataParts":\s*\[[^\]]*"text":\s*\{\s*"content":\s*"([^"]*подписчик[^"]+)"/,
+    
+    // JSON patterns with escaped quotes - but prioritize those near channelMetadataRenderer or c4TabbedHeaderRenderer
     /"subscriberCountText":\s*\{\s*"simpleText":\s*"([^"]+)"/,
     /"subscriberCountText":\s*\{\s*"runs":\s*\[\s*\{\s*"text":\s*"([^"]+)"/,
     /subscriberCountText["\s]*:\s*\{[^}]*simpleText["\s]*:\s*"([^"]+)"/,
@@ -283,7 +291,9 @@ function checkVerified(html: string): { verified: boolean; type: 'standard' | 'm
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { url } = body;
+    const { url, debug } = body;
+    const debugMode = debug === true;
+    const debugInfo: any = {};
 
     if (!url) {
       return NextResponse.json(
@@ -326,14 +336,25 @@ export async function POST(request: NextRequest) {
     if (ytInitialDataMatch && ytInitialDataMatch[1]) {
       try {
         ytInitialData = JSON.parse(ytInitialDataMatch[1]);
+        if (debugMode) {
+          debugInfo.ytInitialDataFound = true;
+          debugInfo.hasHeader = !!ytInitialData?.header?.c4TabbedHeaderRenderer;
+          debugInfo.hasMetadata = !!ytInitialData?.metadata?.channelMetadataRenderer;
+        }
         console.log("=== ytInitialData extracted ===");
         console.log("Header exists:", !!ytInitialData?.header?.c4TabbedHeaderRenderer);
         console.log("Metadata exists:", !!ytInitialData?.metadata?.channelMetadataRenderer);
       } catch (e) {
         // If JSON parsing fails, continue with HTML parsing
+        if (debugMode) {
+          debugInfo.ytInitialDataParseError = String(e);
+        }
         console.log("Failed to parse ytInitialData, falling back to HTML parsing");
       }
     } else {
+      if (debugMode) {
+        debugInfo.ytInitialDataFound = false;
+      }
       console.log("=== ytInitialData NOT found in HTML ===");
     }
 
@@ -355,17 +376,37 @@ export async function POST(request: NextRequest) {
         // Extract subscriber count from header (main channel only)
         const header = ytInitialData?.header?.c4TabbedHeaderRenderer;
         if (header) {
+          if (debugMode) {
+            debugInfo.headerFound = true;
+            debugInfo.subscriberCountText = header.subscriberCountText;
+            debugInfo.badges = header.badges;
+            debugInfo.contentMetadataViewModel = header.contentMetadataViewModel;
+          }
           console.log("=== Header found ===");
           console.log("SubscriberCountText:", JSON.stringify(header.subscriberCountText));
           console.log("Badges:", JSON.stringify(header.badges));
           
-          // Subscriber count
+          // Subscriber count - check multiple possible structures
           if (header.subscriberCountText?.simpleText) {
             subscriberCount = header.subscriberCountText.simpleText;
+            if (debugMode) debugInfo.subscriberSource = "simpleText";
             console.log("Subscriber count (simpleText):", subscriberCount);
           } else if (header.subscriberCountText?.runs?.[0]?.text) {
             subscriberCount = header.subscriberCountText.runs[0].text;
+            if (debugMode) debugInfo.subscriberSource = "runs";
             console.log("Subscriber count (runs):", subscriberCount);
+          } else if (header.contentMetadataViewModel?.metadataParts) {
+            // Try contentMetadataViewModel structure (from API response)
+            const metadataParts = header.contentMetadataViewModel.metadataParts;
+            if (debugMode) debugInfo.metadataParts = metadataParts;
+            for (const part of metadataParts) {
+              if (part.text?.content && part.text.content.includes("подписчик")) {
+                subscriberCount = part.text.content;
+                if (debugMode) debugInfo.subscriberSource = "contentMetadataViewModel";
+                console.log("Subscriber count (contentMetadataViewModel):", subscriberCount);
+                break;
+              }
+            }
           }
           
           // Avatar
@@ -376,9 +417,12 @@ export async function POST(request: NextRequest) {
           
           // Verification badges (only from main channel header)
           if (header.badges && Array.isArray(header.badges)) {
+            if (debugMode) debugInfo.badgesFound = header.badges.length;
             console.log("Badges array length:", header.badges.length);
             for (const badge of header.badges) {
               const style = badge?.metadataBadgeRenderer?.style;
+              if (debugMode) debugInfo.badgeStyles = debugInfo.badgeStyles || [];
+              debugInfo.badgeStyles.push(style);
               console.log("Badge style:", style);
               if (style === "BADGE_STYLE_TYPE_VERIFIED_MUSIC") {
                 verification = { verified: true, type: 'music' };
@@ -395,9 +439,11 @@ export async function POST(request: NextRequest) {
               }
             }
           } else {
+            if (debugMode) debugInfo.badgesFound = 0;
             console.log("No badges array found in header");
           }
         } else {
+          if (debugMode) debugInfo.headerFound = false;
           console.log("=== Header NOT found ===");
         }
       } catch (e) {
@@ -453,19 +499,35 @@ export async function POST(request: NextRequest) {
 
     if (!title) {
       return NextResponse.json(
-        { success: false, error: "Unable to parse channel data" },
+        { 
+          success: false, 
+          error: "Unable to parse channel data",
+          ...(debugMode && { debug: debugInfo })
+        },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({
+    const response: any = {
       success: true,
       title,
       avatar: avatar || "/placeholder-avatar.png",
       subscriberCount: subscriberCount || "N/A",
       verified: verification.verified,
       verificationType: verification.type,
-    });
+    };
+
+    if (debugMode) {
+      response.debug = {
+        ...debugInfo,
+        finalTitle: title,
+        finalSubscriberCount: subscriberCount,
+        finalVerification: verification,
+        finalAvatar: avatar ? "Found" : "Not found",
+      };
+    }
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error("Error fetching YouTube channel:", error);
     return NextResponse.json(
