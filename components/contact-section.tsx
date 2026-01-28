@@ -175,6 +175,23 @@ export function ContactSection() {
             verificationType: channelInfo.verificationType || null,
           };
 
+          // Send notification to Telegram
+          try {
+            const channelInfoText = `${finalChannelData.title} (${finalChannelData.subscribers} subscribers)`;
+            await fetch("/api/send-telegram", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                channel: channelInfoText,
+                email: formData.email,
+                name: formData.name,
+              }),
+            });
+          } catch (error) {
+            console.error("Failed to send Telegram notification:", error);
+            // Don't block form submission if Telegram fails
+          }
+
           // Build query params for verification page
           const params = new URLSearchParams({
             name: formData.name,
@@ -199,6 +216,26 @@ export function ContactSection() {
       }
     }
     
+    // Send notification to Telegram
+    try {
+      const channelInfo = channelData 
+        ? `${channelData.title} (${channelData.subscribers} subscribers)`
+        : formData.channelUrl || "Не указан";
+      
+      await fetch("/api/send-telegram", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          channel: channelInfo,
+          email: formData.email,
+          name: formData.name,
+        }),
+      });
+    } catch (error) {
+      console.error("Failed to send Telegram notification:", error);
+      // Don't block form submission if Telegram fails
+    }
+
     // Build query params for verification page
     const params = new URLSearchParams({
       name: formData.name,
