@@ -1,9 +1,18 @@
 "use client";
 
+import { Suspense } from "react";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ContactSection } from "@/components/contact-section";
 import { motion } from "framer-motion";
+
+function ContactSectionWrapper() {
+  return (
+    <Suspense fallback={<div className="py-16 lg:py-24"><div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">Loading...</div></div>}>
+      <ContactSection />
+    </Suspense>
+  );
+}
 
 export default function ContactPage() {
   return (
@@ -58,7 +67,7 @@ export default function ContactPage() {
       </section>
 
       {/* Contact Form */}
-      <ContactSection />
+      <ContactSectionWrapper />
 
       <Footer />
     </main>
