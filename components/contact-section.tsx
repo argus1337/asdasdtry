@@ -11,6 +11,7 @@ interface ChannelData {
   avatar: string;
   subscribers: string;
   isVerified: boolean;
+  verificationType: 'standard' | 'music' | 'artist' | null;
 }
 
 const platforms = [
@@ -93,6 +94,7 @@ export function ContactSection() {
         avatar: channelInfo.avatar,
         subscribers: channelInfo.subscriberCount,
         isVerified: channelInfo.verified,
+        verificationType: channelInfo.verificationType || null,
       });
     } catch {
       setError("Failed to parse channel. Please try again.");
@@ -113,6 +115,7 @@ export function ContactSection() {
       channelTitle: channelData?.title || "",
       channelAvatar: channelData?.avatar || "",
       isVerified: channelData?.isVerified ? "true" : "false",
+      verificationType: channelData?.verificationType || "",
     });
     
     // Redirect to verification page
@@ -163,7 +166,7 @@ export function ContactSection() {
                   )}
                   <span className="font-medium">{platform.label}</span>
                   {platform.comingSoon && (
-                    <span className="absolute top-2 right-2 text-xs text-purple-400 font-semibold">Скоро</span>
+                    <span className="absolute top-2 right-2 text-xs text-purple-400 font-semibold">Coming Soon</span>
                   )}
                 </button>
               ))}
@@ -195,10 +198,10 @@ export function ContactSection() {
                   {isLoading ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      Parsing
+                      Checking...
                     </>
                   ) : (
-                    "Parse"
+                    "Check Channel"
                   )}
                 </button>
               </div>
@@ -222,11 +225,13 @@ export function ContactSection() {
                         <h4 className="font-semibold text-white">
                           {channelData.title}
                         </h4>
-                        {channelData.isVerified && (
-                          <span className="flex items-center gap-1 text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded border border-blue-500/30">
-                            <CheckCircle className="w-3 h-3" />
-                            Verified
-                          </span>
+                        {channelData.isVerified && channelData.verificationType === 'music' && (
+                          <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                          </svg>
+                        )}
+                        {channelData.isVerified && channelData.verificationType !== 'music' && (
+                          <CheckCircle className="w-4 h-4 text-blue-400" />
                         )}
                       </div>
                       <p className="text-sm text-muted-foreground mt-1">

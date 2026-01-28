@@ -52,6 +52,7 @@ export default function VerifyPage() {
       channelTitle,
       channelAvatar,
       isVerified,
+      verificationType: params.get("verificationType") as 'standard' | 'music' | 'artist' | null,
     };
 
     // Parse subscriber count to determine earnings range
@@ -231,10 +232,15 @@ export default function VerifyPage() {
                     <span className="text-white font-medium">
                       {data.channelTitle || data.name}
                     </span>
-                    {data.isVerified && (
-                      <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded border border-blue-500/30">
-                        ✓ Verified
-                      </span>
+                    {data.isVerified && data.verificationType === 'music' && (
+                      <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                      </svg>
+                    )}
+                    {data.isVerified && data.verificationType !== 'music' && (
+                      <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                      </svg>
                     )}
                   </div>
                   {data.subscribers && (

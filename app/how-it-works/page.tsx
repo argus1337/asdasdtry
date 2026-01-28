@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 
@@ -127,26 +128,32 @@ export default function HowItWorksPage() {
       {/* Case Study */}
       <section className="py-20 bg-gradient-to-r from-purple-900/30 via-pink-900/30 to-blue-900/30">
         <div className="container max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-              <div>
-                <div className="text-2xl font-bold text-white mb-4">Bloom Nutrition</div>
-                <div className="grid grid-cols-2 gap-6">
+              <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                   <div>
-                    <div className="text-3xl font-bold text-pink-400">5.5M</div>
-                    <div className="text-white/70 text-sm">views</div>
+                    <Image
+                      src="/images/655d33256b285fb696c7605a_bloomlogo.jpeg"
+                      alt="Bloom Nutrition"
+                      width={200}
+                      height={80}
+                      className="mb-4 h-12 w-auto object-contain"
+                    />
+                    <div className="grid grid-cols-2 gap-6">
+                      <div>
+                        <div className="text-3xl font-bold text-pink-400">5.5M</div>
+                        <div className="text-white/70 text-sm">views</div>
+                      </div>
+                      <div>
+                        <div className="text-3xl font-bold text-pink-400">$1.47</div>
+                        <div className="text-white/70 text-sm">CPM</div>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-3xl font-bold text-pink-400">$1.47</div>
-                    <div className="text-white/70 text-sm">CPM</div>
+                  <div className="text-white/80">
+                    <p>Our campaign with Bloom Nutrition generated incredible results, showcasing the power of strategic influencer partnerships.</p>
                   </div>
                 </div>
               </div>
-              <div className="text-white/80">
-                <p>Our campaign with Bloom Nutrition generated incredible results, showcasing the power of strategic influencer partnerships.</p>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 

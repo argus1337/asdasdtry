@@ -1,10 +1,12 @@
+import Image from "next/image";
+
 const clients = [
-  { name: "Disney", logo: "Disney" },
-  { name: "Amazon", logo: "Amazon" },
-  { name: "GNC", logo: "GNC" },
-  { name: "Lyft", logo: "Lyft" },
-  { name: "Crocs", logo: "Crocs" },
-  { name: "Blue Chew", logo: "BlueChew" },
+  { name: "Disney", logo: "/images/62833b96aef969eb76b8faf7_Disney_wordmark_1.svg" },
+  { name: "Amazon", logo: "/images/62833b9627cc9965e37886e9_Amazon_logo_1.svg" },
+  { name: "GNC", logo: "/images/6658a24915de1e79bf4cac2a_gnc.png" },
+  { name: "Lyft", logo: "/images/6418996a19486aace8d5e835_lyft-logo_1.svg" },
+  { name: "Crocs", logo: "/images/6658a289fff29b1650697847_crocs.png" },
+  { name: "BlueChew", logo: "/images/6658a0ed71d87a6d8bc6e551_bluechew.png" },
 ];
 
 export function ClientLogos() {
@@ -17,9 +19,13 @@ export function ClientLogos() {
               key={client.name}
               className="flex items-center justify-center p-4 logo-grayscale"
             >
-              <div className="text-xl sm:text-2xl font-bold text-white/60 hover:text-white transition-all">
-                {client.logo}
-              </div>
+              <Image
+                src={client.logo}
+                alt={client.name}
+                width={120}
+                height={60}
+                className="h-8 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity"
+              />
             </div>
           ))}
         </div>

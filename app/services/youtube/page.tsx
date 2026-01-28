@@ -34,7 +34,13 @@ export default function YouTubePage() {
               </Link>
             </div>
             <div className="relative">
-              <div className="w-full h-96 bg-gradient-to-br from-red-500/20 to-pink-500/20 rounded-2xl" />
+              <Image
+                src="/images/60df18585b4eb434631eff2f_Group_17.png"
+                alt="YouTube Marketing"
+                width={600}
+                height={400}
+                className="w-full h-auto rounded-2xl"
+              />
             </div>
           </div>
         </div>
@@ -61,11 +67,11 @@ export default function YouTubePage() {
               </div>
             </div>
             <div className="grid grid-cols-3 gap-4 opacity-60">
-              <div className="text-white/60 text-sm text-center">Disney</div>
-              <div className="text-white/60 text-sm text-center">Amazon</div>
-              <div className="text-white/60 text-sm text-center">Netflix</div>
-              <div className="text-white/60 text-sm text-center">Adobe</div>
-              <div className="text-white/60 text-sm text-center">Aerie</div>
+              <Image src="/images/62833b96aef969eb76b8faf7_Disney_wordmark_1.svg" alt="Disney" width={100} height={40} className="h-8 w-auto object-contain mx-auto" />
+              <Image src="/images/62833b9627cc9965e37886e9_Amazon_logo_1.svg" alt="Amazon" width={100} height={40} className="h-8 w-auto object-contain mx-auto" />
+              <Image src="/images/64189ad736481a26d5793180_Netflix_2015_logo_1.svg" alt="Netflix" width={100} height={40} className="h-8 w-auto object-contain mx-auto" />
+              <Image src="/images/62bbca1f33f884151ec446a8_Adobe_Corporate_Logo.png" alt="Adobe" width={100} height={40} className="h-8 w-auto object-contain mx-auto" />
+              <Image src="/images/62833b968d2bbbab27a34d29_aerie-seeklogo.com_2_1.svg" alt="Aerie" width={100} height={40} className="h-8 w-auto object-contain mx-auto" />
             </div>
           </div>
         </div>

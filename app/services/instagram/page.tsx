@@ -19,20 +19,20 @@ export default function InstagramPage() {
             </div>
           </div>
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-            Instagram Marketing <span className="text-pink-400">Скоро</span>
+            Instagram Marketing <span className="text-pink-400">Coming Soon</span>
           </h1>
           <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
-            Мы работаем над добавлением Instagram маркетинга. Скоро вы сможете использовать наш сервис для продвижения в Instagram!
+            We're working on adding Instagram marketing. Soon you'll be able to use our service to promote on Instagram!
           </p>
           <div className="flex gap-4 justify-center">
             <Link href="/services/youtube">
               <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg">
-                Попробовать YouTube
+                Try YouTube
               </Button>
             </Link>
             <Link href="/contact">
               <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 px-8 py-6 text-lg">
-                Связаться с нами
+                Contact Us
               </Button>
             </Link>
           </div>

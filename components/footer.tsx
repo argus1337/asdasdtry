@@ -108,7 +108,7 @@ export function Footer() {
                 <li key={link.label}>
                   {link.disabled ? (
                     <span className="text-sm text-muted-foreground/50 cursor-not-allowed">
-                      {link.label} <span className="text-xs text-purple-400">(скоро)</span>
+                      {link.label} <span className="text-xs text-purple-400">(Coming Soon)</span>
                     </span>
                   ) : (
                     <Link

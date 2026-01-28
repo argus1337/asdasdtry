@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 
@@ -153,11 +154,11 @@ export default function AboutPage() {
             We've worked wonders for more brands than you can shake a wand at.
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center opacity-60">
-            <div className="text-white/60 text-sm">Disney</div>
-            <div className="text-white/60 text-sm">Amazon</div>
-            <div className="text-white/60 text-sm">Netflix</div>
-            <div className="text-white/60 text-sm">Adobe</div>
-            <div className="text-white/60 text-sm">Aerie</div>
+            <Image src="/images/62833b96aef969eb76b8faf7_Disney_wordmark_1.svg" alt="Disney" width={120} height={40} className="h-10 w-auto object-contain mx-auto" />
+            <Image src="/images/62833b9627cc9965e37886e9_Amazon_logo_1.svg" alt="Amazon" width={120} height={40} className="h-10 w-auto object-contain mx-auto" />
+            <Image src="/images/64189ad736481a26d5793180_Netflix_2015_logo_1.svg" alt="Netflix" width={120} height={40} className="h-10 w-auto object-contain mx-auto" />
+            <Image src="/images/62bbca1f33f884151ec446a8_Adobe_Corporate_Logo.png" alt="Adobe" width={120} height={40} className="h-10 w-auto object-contain mx-auto" />
+            <Image src="/images/62833b968d2bbbab27a34d29_aerie-seeklogo.com_2_1.svg" alt="Aerie" width={120} height={40} className="h-10 w-auto object-contain mx-auto" />
           </div>
           <div className="mt-12">
             <Link href="/clients">
@@ -242,7 +243,13 @@ export default function AboutPage() {
             
             <div className="space-y-12">
               <div className="flex gap-6">
-                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex-shrink-0" />
+                <Image
+                  src="/images/6323aa1bf0aabc841be85f74_jess-3.png"
+                  alt="Jess Flack"
+                  width={128}
+                  height={128}
+                  className="w-32 h-32 rounded-full object-cover flex-shrink-0"
+                />
                 <div>
                   <p className="text-xl font-semibold text-white mb-2">
                     Jess Flack, <span className="text-pink-400">CEO & Cofounder</span>
@@ -254,7 +261,13 @@ export default function AboutPage() {
               </div>
               
               <div className="flex gap-6">
-                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex-shrink-0" />
+                <Image
+                  src="/images/6323aa56b7ef37e2cbc77022_Jesse-serious.jpg"
+                  alt="Jesse Gambucci"
+                  width={128}
+                  height={128}
+                  className="w-32 h-32 rounded-full object-cover flex-shrink-0"
+                />
                 <div>
                   <p className="text-xl font-semibold text-white mb-2">
                     Jesse Gambucci, <span className="text-pink-400">EVP of Sales & Strategy</span>

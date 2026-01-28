@@ -93,7 +93,7 @@ export function Navbar() {
                         >
                           {subItem.label}
                           {subItem.comingSoon && (
-                            <span className="ml-2 text-xs text-purple-400">(скоро)</span>
+                            <span className="ml-2 text-xs text-purple-400">(Coming Soon)</span>
                           )}
                         </div>
                       ) : (
@@ -156,7 +156,7 @@ export function Navbar() {
                         >
                           {subItem.label}
                           {subItem.comingSoon && (
-                            <span className="ml-2 text-xs text-purple-400">(скоро)</span>
+                            <span className="ml-2 text-xs text-purple-400">(Coming Soon)</span>
                           )}
                         </div>
                       ) : (
