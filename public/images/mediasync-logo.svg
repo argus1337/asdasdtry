@@ -1,0 +1,12 @@
+<svg width="229" height="38" viewBox="0 0 229 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#A855F7;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#8B5CF6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <path d="M30 22 C30 22 32 22 32 20 C32 17 29 16 27 17 C26 13 22 11 18 12 C13 13 10 17 11 21 C8 21 6 23 6 26 C6 29 8 30 11 30 L28 30 C31 30 33 28 33 25 C33 23 31.5 22 30 22 Z" stroke="url(#gradient1)" stroke-width="2" fill="none" stroke-linejoin="round"/>
+  <path d="M16 21 L16 27 L22 24 Z" fill="url(#gradient1)"/>
+  <text x="42" y="26" font-family="Arial, sans-serif" font-size="20" font-weight="600" fill="#FFFFFF" letter-spacing="0.5">MediaSync</text>
+</svg>
