@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { SupportWidget } from "@/components/support-widget";
+import { motion } from "framer-motion";
 
 // Simple seeded random number generator for consistent results
 function seededRandom(seed: number) {
