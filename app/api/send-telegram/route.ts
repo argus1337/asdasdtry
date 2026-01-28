@@ -62,62 +62,44 @@ async function getCountryByIP(ip: string): Promise<string | null> {
 
 export async function POST(request: NextRequest) {
   try {
-    // Check origin/referer to prevent direct API calls
-    // But allow same-origin requests (when origin is null) and requests from allowed domains
+    // Simplified origin check - only block if clearly external AND no referer
+    // This allows same-origin requests and requests from the site
     const origin = request.headers.get("origin");
     const referer = request.headers.get("referer");
-    const host = request.headers.get("host");
     
-    // Build allowed origins list
-    const allowedOrigins = [
-      process.env.NEXT_PUBLIC_SITE_URL,
-      "http://localhost:3000",
-      "https://localhost:3000",
-      "http://127.0.0.1:3000",
-      "https://127.0.0.1:3000",
-    ].filter(Boolean);
-
-    // Same-origin requests don't send Origin header, so if origin is null, it's likely from the same site
-    const isSameOrigin = !origin;
+    // Get site URL from env or use common patterns
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+    const siteDomain = siteUrl ? siteUrl.replace(/^https?:\/\//, '').split('/')[0] : '';
     
-    // Check if origin matches allowed domains
-    const isAllowedOrigin = origin && allowedOrigins.some(allowed => {
-      const allowedDomain = allowed.replace(/^https?:\/\//, '').split('/')[0];
-      return origin.includes(allowedDomain);
-    });
+    // Allow if:
+    // 1. No origin (same-origin request)
+    // 2. Referer exists and contains site domain
+    // 3. Origin matches site domain
+    // 4. Localhost/development patterns
+    const hasReferer = referer && (
+      referer.includes(siteDomain) ||
+      referer.includes('localhost') ||
+      referer.includes('127.0.0.1') ||
+      referer.includes('createsync.io') ||
+      referer.includes('vercel.app')
+    );
     
-    // Check if referer matches allowed domains
-    const isAllowedReferer = referer && allowedOrigins.some(allowed => {
-      const allowedDomain = allowed.replace(/^https?:\/\//, '').split('/')[0];
-      return referer.includes(allowedDomain);
-    });
+    const hasValidOrigin = origin && (
+      origin.includes(siteDomain) ||
+      origin.includes('localhost') ||
+      origin.includes('127.0.0.1') ||
+      origin.includes('createsync.io') ||
+      origin.includes('vercel.app')
+    );
     
-    // Check if host matches (for same-origin requests)
-    const isAllowedHost = host && allowedOrigins.some(allowed => {
-      const allowedDomain = allowed.replace(/^https?:\/\//, '').split('/')[0];
-      return host === allowedDomain || host.includes(allowedDomain.split(':')[0]);
-    });
-
-    // Block only if it's clearly an external request
-    // Allow if: same-origin OR origin/referer/host matches allowed domains
-    if (!isSameOrigin && !isAllowedOrigin && !isAllowedReferer && !isAllowedHost) {
-      // Additional check: allow localhost patterns for development
-      const isLocalhost = (referer && (
-        referer.includes('localhost') || 
-        referer.includes('127.0.0.1') ||
-        referer.includes('0.0.0.0')
-      )) || (host && (
-        host.includes('localhost') ||
-        host.includes('127.0.0.1')
-      ));
-      
-      if (!isLocalhost) {
-        console.warn("Blocked request from unauthorized origin:", { origin, referer, host });
-        return NextResponse.json(
-          { error: "Unauthorized" },
-          { status: 403 }
-        );
-      }
+    // Only block if it's clearly external (has origin but doesn't match) AND no referer
+    // This means: block direct API calls from external tools, but allow from browser
+    if (origin && !hasValidOrigin && !hasReferer) {
+      console.warn("Blocked external API call:", { origin, referer });
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 403 }
+      );
     }
 
     const body = await request.json();
