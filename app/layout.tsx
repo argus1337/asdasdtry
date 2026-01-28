@@ -1,5 +1,5 @@
 import React from "react"
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Poppins } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
@@ -14,21 +14,22 @@ export const metadata: Metadata = {
   title: 'CreateSync | Influencer Marketing Agency',
   description: 'Full-service influencer marketing agency with end-to-end campaign management. We connect brands with creators on TikTok, Instagram, and YouTube.',
   generator: 'v0.app',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
   icons: {
     icon: [
       {
-        url: '/images/createsync-logo-icon.png',
+        url: '/images/createsync-logo-icon-new.png',
         type: 'image/png',
       },
     ],
-    apple: '/images/createsync-logo-icon.png',
+    apple: '/images/createsync-logo-icon-new.png',
   },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export default function RootLayout({
