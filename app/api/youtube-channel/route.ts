@@ -123,11 +123,15 @@ function extractSubscriberCount(html: string, debugInfo?: any): string | null {
     for (const match of matches) {
       if (match && match[1] && match.index !== undefined) {
         const context = match[0];
-        // Check if this is from main channel (has c4TabbedHeaderRenderer or channelMetadataRenderer in context)
+        // Check if this is from main channel
+        // Main channel usually comes LATER in HTML (after recommended channels)
+        // Also check for specific markers
         const isMainChannel = context.includes('c4TabbedHeaderRenderer') || 
                              context.includes('channelMetadataRenderer') ||
                              context.includes('pageHeaderRenderer') ||
-                             (match.index < html.length / 2); // First half of HTML is usually main channel
+                             context.includes('channelHeaderViewModel') ||
+                             // Main channel usually appears later in HTML (after recommended sections)
+                             (match.index > html.length * 0.4); // After 40% of HTML
         
         allMatches.push({
           count: match[1].trim(),
@@ -140,15 +144,20 @@ function extractSubscriberCount(html: string, debugInfo?: any): string | null {
     }
   }
   
-  // Sort by: 1) isMainChannel flag, 2) pattern index (earlier patterns are more reliable), 3) position (earlier in HTML = main channel)
+  // Sort by: 1) isMainChannel flag, 2) position (LATER in HTML = main channel, recommended channels come first), 3) pattern index
   allMatches.sort((a, b) => {
     if (a.isMainChannel !== b.isMainChannel) {
       return a.isMainChannel ? -1 : 1; // Prefer main channel matches
     }
+    // Main channel usually appears LATER in HTML (after recommended channels section)
+    // So prefer matches with HIGHER position (later in HTML)
+    if (Math.abs(a.position - b.position) > 10000) {
+      return b.position - a.position; // Prefer later positions (main channel)
+    }
     if (a.patternIndex !== b.patternIndex) {
       return a.patternIndex - b.patternIndex; // Prefer earlier patterns
     }
-    return a.position - b.position; // Prefer earlier positions
+    return b.position - a.position; // Prefer later positions as tiebreaker
   });
   
     // Process matches in order, return first valid one
@@ -498,30 +507,49 @@ export async function POST(request: NextRequest) {
         // Try pageHeaderRenderer structure
         if (!header && ytInitialData?.header?.pageHeaderRenderer) {
           const pageHeader = ytInitialData.header.pageHeaderRenderer;
-          if (debugMode) debugInfo.usingPageHeaderRenderer = true;
+          if (debugMode) {
+            debugInfo.usingPageHeaderRenderer = true;
+            debugInfo.pageHeaderKeys = Object.keys(pageHeader);
+          }
           
-          // Extract from pageHeaderRenderer
-          if (pageHeader.content?.channelHeaderViewModel) {
-            const channelHeader = pageHeader.content.channelHeaderViewModel;
+          // Extract from pageHeaderRenderer - try multiple possible structures
+          const channelHeader = pageHeader.content?.channelHeaderViewModel ||
+                               pageHeader.channelHeaderViewModel ||
+                               pageHeader.content;
+          
+          if (channelHeader) {
+            if (debugMode) {
+              debugInfo.channelHeaderKeys = Object.keys(channelHeader);
+            }
             
-            // Subscriber count
+            // Subscriber count - try multiple paths
             if (channelHeader.subscriberCountText?.simpleText) {
               subscriberCount = channelHeader.subscriberCountText.simpleText;
               if (debugMode) debugInfo.subscriberSource = "pageHeaderRenderer.simpleText";
             } else if (channelHeader.subscriberCountText?.runs?.[0]?.text) {
               subscriberCount = channelHeader.subscriberCountText.runs[0].text;
               if (debugMode) debugInfo.subscriberSource = "pageHeaderRenderer.runs";
+            } else if (channelHeader.subscriberCount?.simpleText) {
+              subscriberCount = channelHeader.subscriberCount.simpleText;
+              if (debugMode) debugInfo.subscriberSource = "pageHeaderRenderer.subscriberCount";
             }
             
             // Avatar
             if (channelHeader.avatar?.thumbnails?.[0]?.url) {
               avatar = channelHeader.avatar.thumbnails[0].url;
+            } else if (channelHeader.thumbnail?.thumbnails?.[0]?.url) {
+              avatar = channelHeader.thumbnail.thumbnails[0].url;
             }
             
             // Verification badges
             if (channelHeader.badges && Array.isArray(channelHeader.badges)) {
+              if (debugMode) debugInfo.badgesFound = channelHeader.badges.length;
               for (const badge of channelHeader.badges) {
                 const style = badge?.metadataBadgeRenderer?.style;
+                if (debugMode) {
+                  debugInfo.badgeStyles = debugInfo.badgeStyles || [];
+                  debugInfo.badgeStyles.push(style);
+                }
                 if (style === "BADGE_STYLE_TYPE_VERIFIED_MUSIC") {
                   verification = { verified: true, type: 'music' };
                   break;
@@ -532,6 +560,11 @@ export async function POST(request: NextRequest) {
                   verification = { verified: true, type: 'standard' };
                   break;
                 }
+              }
+            } else {
+              // Check for verification in other places
+              if (channelHeader.isVerified === true) {
+                verification = { verified: true, type: 'standard' };
               }
             }
           }
