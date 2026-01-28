@@ -14,6 +14,12 @@ export const metadata: Metadata = {
   title: 'CreateSync | Influencer Marketing Agency',
   description: 'Full-service influencer marketing agency with end-to-end campaign management. We connect brands with creators on TikTok, Instagram, and YouTube.',
   generator: 'v0.app',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
   icons: {
     icon: [
       {

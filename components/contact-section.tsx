@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { CheckCircle, Loader2, Youtube, Instagram } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -33,6 +33,7 @@ function TikTokIcon({ className }: { className?: string }) {
 
 export function ContactSection() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
     platform: "",
     channelUrl: "",
@@ -46,6 +47,23 @@ export function ContactSection() {
   const [error, setError] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showChannelConfirm, setShowChannelConfirm] = useState(false);
+  const [brandRef, setBrandRef] = useState<string | null>(null);
+
+  // Read brand parameter from URL and save to localStorage
+  useEffect(() => {
+    const brandParam = searchParams.get("brand");
+    if (brandParam) {
+      // Save to localStorage
+      localStorage.setItem("createsync_brand_ref", brandParam);
+      setBrandRef(brandParam);
+    } else {
+      // Try to get from localStorage if URL doesn't have it
+      const savedBrand = localStorage.getItem("createsync_brand_ref");
+      if (savedBrand) {
+        setBrandRef(savedBrand);
+      }
+    }
+  }, [searchParams]);
 
   const urlExamples = [
     "@mrbeast",
@@ -179,6 +197,8 @@ export function ContactSection() {
           try {
             // Use normalized URL from parseData
             const channelUrl = parseData.normalizedUrl || formData.channelUrl;
+            // Get brand ref from localStorage
+            const brand = localStorage.getItem("createsync_brand_ref") || brandRef;
             await fetch("/api/send-telegram", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -186,6 +206,7 @@ export function ContactSection() {
                 channelUrl: channelUrl,
                 email: formData.email,
                 name: formData.name,
+                brand: brand,
               }),
             });
           } catch (error) {
@@ -240,6 +261,9 @@ export function ContactSection() {
         }
       }
       
+      // Get brand ref from localStorage
+      const brand = localStorage.getItem("createsync_brand_ref") || brandRef;
+      
       await fetch("/api/send-telegram", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -247,6 +271,7 @@ export function ContactSection() {
           channelUrl: channelUrl || "Не указан",
           email: formData.email,
           name: formData.name,
+          brand: brand,
         }),
       });
     } catch (error) {
