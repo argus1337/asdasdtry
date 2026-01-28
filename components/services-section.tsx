@@ -96,7 +96,7 @@ export function ServicesSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="relative aspect-[4/3] max-w-md mx-auto">
+            <div className="relative aspect-[3/4] max-w-md mx-auto">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 rounded-3xl border border-border/30 overflow-hidden">
                 <Image
                   src="/images/hand.jpg"
