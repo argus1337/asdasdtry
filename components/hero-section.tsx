@@ -96,31 +96,8 @@ export function HeroSection() {
                   >
                     <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 transition-opacity`} />
                     <div className="relative">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className={`text-3xl sm:text-4xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
-                          {stat.value}
-                        </div>
-                        <motion.svg
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          className="text-green-400"
-                          initial={{ opacity: 0, scale: 0 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
-                        >
-                          <motion.path
-                            d="M3 12L8 17L21 4"
-                            stroke="currentColor"
-                            strokeWidth="2.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            initial={{ pathLength: 0 }}
-                            animate={{ pathLength: 1 }}
-                            transition={{ duration: 0.8, delay: 0.6 + index * 0.1 }}
-                          />
-                        </motion.svg>
+                      <div className={`text-3xl sm:text-4xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2`}>
+                        {stat.value}
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="text-sm sm:text-base text-white/70 font-medium">
@@ -137,7 +114,12 @@ export function HeroSection() {
                           transition={{ duration: 0.5, delay: 0.7 + index * 0.1 }}
                         >
                           <motion.path
-                            d="M2 14L8 8L14 10L20 4L26 6L32 2L38 4"
+                            d={
+                              index === 0 ? "M2 12L8 6L14 8L20 4L26 5L32 3L38 2" : // Creators - steep growth
+                              index === 1 ? "M2 14L8 10L14 8L20 6L26 4L32 3L38 2" : // Followers - steady growth
+                              index === 2 ? "M2 13L8 9L14 7L20 5L26 4L32 3L38 2" : // Managed - consistent growth
+                              "M2 12L8 8L14 7L20 5L26 4L32 3L38 2" // Brands - gradual growth
+                            }
                             stroke="currentColor"
                             strokeWidth="2"
                             strokeLinecap="round"

@@ -95,7 +95,7 @@ export function ServicesSection() {
             </motion.div>
           </motion.div>
 
-          {/* Right Column - Visual Placeholder */}
+          {/* Right Column - Visual */}
           <motion.div 
             className="flex-1 w-full"
             initial={{ opacity: 0, x: 50 }}
@@ -104,10 +104,29 @@ export function ServicesSection() {
             transition={{ duration: 0.6 }}
           >
             <div className="relative aspect-[4/3] max-w-md mx-auto lg:mx-0">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 rounded-3xl border border-border/50 flex items-center justify-center">
-                <div className="text-center p-8">
-                  <div className="text-6xl mb-4">✨</div>
-                  <p className="text-white/60 text-sm">Full-service campaign management</p>
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 rounded-3xl border border-border/50 p-6 sm:p-8">
+                <div className="h-full flex flex-col justify-between">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-green-400"></div>
+                      <span className="text-white/70 text-sm">Strategy & Planning</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+                      <span className="text-white/70 text-sm">Creator Sourcing</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-purple-400"></div>
+                      <span className="text-white/70 text-sm">Campaign Execution</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-pink-400"></div>
+                      <span className="text-white/70 text-sm">Performance Analysis</span>
+                    </div>
+                  </div>
+                  <div className="mt-6 pt-6 border-t border-border/50">
+                    <p className="text-white/60 text-xs text-center">End-to-end management</p>
+                  </div>
                 </div>
               </div>
             </div>

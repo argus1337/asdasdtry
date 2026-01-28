@@ -15,11 +15,15 @@ export function ClientLogos() {
   return (
     <section className="py-12 lg:py-16 border-y border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 items-center">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 items-center justify-items-center">
           {clients.map((client, index) => (
             <motion.div
               key={client.name}
-              className="flex items-center justify-center p-4 logo-grayscale"
+              className={`flex items-center justify-center p-4 logo-grayscale ${
+                index === clients.length - 1 && clients.length % 2 !== 0 
+                  ? 'col-span-2 sm:col-span-1 lg:col-span-1' 
+                  : ''
+              }`}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
