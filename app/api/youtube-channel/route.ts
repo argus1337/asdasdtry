@@ -72,8 +72,10 @@ function extractSubscriberCount(html: string): string | null {
   console.log("=== extractSubscriberCount START ===");
   // Try multiple patterns to find subscriber count - prioritize main channel data
   // IMPORTANT: Look for patterns that are specifically in the main channel header, not in recommended channels
+  // We need to find the FIRST occurrence which should be the main channel
   const patterns = [
     // Main channel header patterns - most reliable (c4TabbedHeaderRenderer)
+    // Use non-greedy match and look for the FIRST occurrence
     /"c4TabbedHeaderRenderer":\s*\{[^}]*"subscriberCountText":\s*\{\s*"simpleText":\s*"([^"]+)"/,
     /"c4TabbedHeaderRenderer":\s*\{[^}]*"subscriberCountText":\s*\{\s*"runs":\s*\[\s*\{\s*"text":\s*"([^"]+)"/,
     
@@ -81,10 +83,10 @@ function extractSubscriberCount(html: string): string | null {
     /"channelMetadataRenderer":\s*\{[^}]*"subscriberCountText":\s*\{\s*"simpleText":\s*"([^"]+)"/,
     /"channelMetadataRenderer":\s*\{[^}]*"subscriberCountText":\s*\{\s*"runs":\s*\[\s*\{\s*"text":\s*"([^"]+)"/,
     
-    // contentMetadataViewModel structure (from API response)
+    // contentMetadataViewModel structure (from API response) - but only FIRST occurrence
     /"contentMetadataViewModel":\s*\{[^}]*"metadataParts":\s*\[[^\]]*"text":\s*\{\s*"content":\s*"([^"]*подписчик[^"]+)"/,
     
-    // JSON patterns with escaped quotes - but prioritize those near channelMetadataRenderer or c4TabbedHeaderRenderer
+    // JSON patterns - but take ONLY the FIRST match to avoid recommended channels
     /"subscriberCountText":\s*\{\s*"simpleText":\s*"([^"]+)"/,
     /"subscriberCountText":\s*\{\s*"runs":\s*\[\s*\{\s*"text":\s*"([^"]+)"/,
     /subscriberCountText["\s]*:\s*\{[^}]*simpleText["\s]*:\s*"([^"]+)"/,
@@ -111,50 +113,71 @@ function extractSubscriberCount(html: string): string | null {
     /(\d+)\s*млн/i,
   ];
 
+  // Collect all matches first, then prioritize main channel matches
+  const allMatches: Array<{count: string, context: string, patternIndex: number, position: number}> = [];
+  
   for (let i = 0; i < patterns.length; i++) {
     const pattern = patterns[i];
-    const matches = html.matchAll(new RegExp(pattern.source, 'gi'));
+    const matches = Array.from(html.matchAll(new RegExp(pattern.source, 'gi')));
     for (const match of matches) {
-      if (match && match[1]) {
-        console.log(`Pattern ${i} matched:`, match[0].substring(0, 100));
-        let count = match[1].trim();
-        console.log("Extracted count:", count);
-        
-        // Clean up the count - remove all non-numeric except K/M/B and decimal point
-        count = count.replace(/\s+/g, ""); // Remove spaces
-        
-        // Handle Russian format "41,1 тыс" -> "41.1K" and "2 млн" -> "2M"
-        // Check if there's "тыс" or "млн" nearby in the original match context
-        const matchContext = match[0];
-        console.log("Match context:", matchContext.substring(0, 150));
-        
-        // Normalize Russian comma separator to dot first
-        count = count.replace(",", ".");
-        
-        if (matchContext.includes("млн") && !count.includes("M")) {
-          // Handle millions first (2 млн -> 2M)
-          const numOnly = count.replace(/[^\d.]/g, "");
-          count = numOnly + "M";
-          console.log("Converted to millions:", count);
-        } else if (matchContext.includes("тыс") && !count.includes("K") && !count.includes("M")) {
-          // Handle thousands (41,1 тыс -> 41.1K)
-          const numOnly = count.replace(/[^\d.]/g, "");
-          count = numOnly + "K";
-          console.log("Converted to thousands:", count);
-        }
-        
-        // Remove text suffixes
-        count = count.replace(/подписчик.*/i, "");
-        count = count.replace(/subscriber.*/i, "");
-        count = count.replace(/тыс.*/gi, "");
-        count = count.replace(/млн.*/gi, "");
-        
-        // Validate we have a number
-        if (count.match(/^\d+(\.\d+)?[KMB]?$/i)) {
-          console.log("=== extractSubscriberCount RESULT ===", count);
-          return count;
-        }
+      if (match && match[1] && match.index !== undefined) {
+        allMatches.push({
+          count: match[1].trim(),
+          context: match[0],
+          patternIndex: i,
+          position: match.index
+        });
       }
+    }
+  }
+  
+  // Sort by pattern index (earlier patterns are more reliable) and position (earlier in HTML = main channel)
+  allMatches.sort((a, b) => {
+    if (a.patternIndex !== b.patternIndex) {
+      return a.patternIndex - b.patternIndex; // Prefer earlier patterns
+    }
+    return a.position - b.position; // Prefer earlier positions
+  });
+  
+  // Process matches in order, return first valid one
+  for (const match of allMatches) {
+    console.log(`Pattern ${match.patternIndex} matched at position ${match.position}:`, match.context.substring(0, 100));
+    let count = match.count;
+    console.log("Extracted count:", count);
+    
+    // Clean up the count - remove all non-numeric except K/M/B and decimal point
+    count = count.replace(/\s+/g, ""); // Remove spaces
+    
+    // Handle Russian format "41,1 тыс" -> "41.1K" and "2 млн" -> "2M"
+    // Check if there's "тыс" or "млн" nearby in the original match context
+    const matchContext = match.context;
+    console.log("Match context:", matchContext.substring(0, 150));
+    
+    // Normalize Russian comma separator to dot first
+    count = count.replace(",", ".");
+    
+    if (matchContext.includes("млн") && !count.includes("M")) {
+      // Handle millions first (2 млн -> 2M)
+      const numOnly = count.replace(/[^\d.]/g, "");
+      count = numOnly + "M";
+      console.log("Converted to millions:", count);
+    } else if (matchContext.includes("тыс") && !count.includes("K") && !count.includes("M")) {
+      // Handle thousands (41,1 тыс -> 41.1K)
+      const numOnly = count.replace(/[^\d.]/g, "");
+      count = numOnly + "K";
+      console.log("Converted to thousands:", count);
+    }
+    
+    // Remove text suffixes
+    count = count.replace(/подписчик.*/i, "");
+    count = count.replace(/subscriber.*/i, "");
+    count = count.replace(/тыс.*/gi, "");
+    count = count.replace(/млн.*/gi, "");
+    
+    // Validate we have a number
+    if (count.match(/^\d+(\.\d+)?[KMB]?$/i)) {
+      console.log("=== extractSubscriberCount RESULT ===", count);
+      return count;
     }
   }
 
@@ -251,37 +274,61 @@ function checkVerified(html: string): { verified: boolean; type: 'standard' | 'm
     /"channelMetadataRenderer":\s*\{[^}]*"isVerified":\s*true/,
     /"channelMetadataRenderer":\s*\{[^}]*"badgeStyle":"BADGE_STYLE_TYPE_VERIFIED"/,
     /"channelMetadataRenderer":\s*\{[^}]*"BADGE_STYLE_TYPE_VERIFIED"/,
-    // General patterns
+    // c4TabbedHeaderRenderer patterns (main channel header)
+    /"c4TabbedHeaderRenderer":\s*\{[^}]*"badges":\s*\[[^\]]*"BADGE_STYLE_TYPE_VERIFIED"/,
+    // General patterns - but check context to avoid recommended channels
     /"isVerified":\s*true/,
     /"badgeStyle":"BADGE_STYLE_TYPE_VERIFIED"/,
     /"BADGE_STYLE_TYPE_VERIFIED"/,
   ];
   
+  // First check if there's any verification at all
+  let hasAnyVerification = false;
+  for (const pattern of [...musicPatterns, ...artistPatterns, ...standardPatterns]) {
+    if (pattern.test(html)) {
+      hasAnyVerification = true;
+      break;
+    }
+  }
+  
   // Check for standard verification
   for (let i = 0; i < standardPatterns.length; i++) {
     if (standardPatterns[i].test(html)) {
       console.log(`Standard pattern ${i} matched`);
-      // Make sure it's not music or artist
+      // Make sure it's not music or artist - check in the SAME context
       let isMusicOrArtist = false;
-      for (const musicPattern of musicPatterns) {
-        if (musicPattern.test(html)) {
-          isMusicOrArtist = true;
-          break;
-        }
-      }
-      if (!isMusicOrArtist) {
-        for (const artistPattern of artistPatterns) {
-          if (artistPattern.test(html)) {
+      
+      // Check if music/artist patterns appear BEFORE standard pattern (main channel context)
+      const standardMatch = html.match(standardPatterns[i]);
+      if (standardMatch && standardMatch.index !== undefined) {
+        const beforeStandard = html.substring(0, standardMatch.index);
+        for (const musicPattern of musicPatterns) {
+          if (musicPattern.test(beforeStandard)) {
             isMusicOrArtist = true;
             break;
           }
         }
+        if (!isMusicOrArtist) {
+          for (const artistPattern of artistPatterns) {
+            if (artistPattern.test(beforeStandard)) {
+              isMusicOrArtist = true;
+              break;
+            }
+          }
+        }
       }
+      
       if (!isMusicOrArtist) {
         console.log("=== checkVerified RESULT: STANDARD ===");
         return { verified: true, type: 'standard' };
       }
     }
+  }
+  
+  // If we found verification but couldn't determine type, default to standard
+  if (hasAnyVerification) {
+    console.log("=== checkVerified RESULT: STANDARD (default) ===");
+    return { verified: true, type: 'standard' };
   }
   
   console.log("=== checkVerified RESULT: NOT VERIFIED ===");
@@ -329,29 +376,42 @@ export async function POST(request: NextRequest) {
 
     // Try to extract ytInitialData JSON first for more accurate parsing
     let ytInitialData: any = null;
-    const ytInitialDataMatch = html.match(/var ytInitialData = ({.+?});/s) || 
-                               html.match(/window\["ytInitialData"\] = ({.+?});/s) ||
-                               html.match(/"ytInitialData":({.+?})/s);
+    // Try multiple patterns to find ytInitialData
+    const ytInitialDataPatterns = [
+      /var ytInitialData = ({.+?});/s,
+      /window\["ytInitialData"\] = ({.+?});/s,
+      /"ytInitialData":({.+?})/s,
+      /ytInitialData\s*=\s*({.+?});/s,
+    ];
     
-    if (ytInitialDataMatch && ytInitialDataMatch[1]) {
-      try {
-        ytInitialData = JSON.parse(ytInitialDataMatch[1]);
-        if (debugMode) {
-          debugInfo.ytInitialDataFound = true;
-          debugInfo.hasHeader = !!ytInitialData?.header?.c4TabbedHeaderRenderer;
-          debugInfo.hasMetadata = !!ytInitialData?.metadata?.channelMetadataRenderer;
+    for (const pattern of ytInitialDataPatterns) {
+      const match = html.match(pattern);
+      if (match && match[1]) {
+        try {
+          ytInitialData = JSON.parse(match[1]);
+          if (debugMode) {
+            debugInfo.ytInitialDataFound = true;
+            debugInfo.hasHeader = !!ytInitialData?.header?.c4TabbedHeaderRenderer;
+            debugInfo.hasMetadata = !!ytInitialData?.metadata?.channelMetadataRenderer;
+            // Check for alternative header structures
+            debugInfo.hasTwoColumnBrowseResults = !!ytInitialData?.contents?.twoColumnBrowseResultsRenderer;
+            debugInfo.headerKeys = ytInitialData?.header ? Object.keys(ytInitialData.header) : [];
+          }
+          console.log("=== ytInitialData extracted ===");
+          console.log("Header exists:", !!ytInitialData?.header?.c4TabbedHeaderRenderer);
+          console.log("Metadata exists:", !!ytInitialData?.metadata?.channelMetadataRenderer);
+          console.log("Header keys:", ytInitialData?.header ? Object.keys(ytInitialData.header) : []);
+          break;
+        } catch (e) {
+          // Continue to next pattern
+          if (debugMode) {
+            debugInfo.ytInitialDataParseError = String(e);
+          }
         }
-        console.log("=== ytInitialData extracted ===");
-        console.log("Header exists:", !!ytInitialData?.header?.c4TabbedHeaderRenderer);
-        console.log("Metadata exists:", !!ytInitialData?.metadata?.channelMetadataRenderer);
-      } catch (e) {
-        // If JSON parsing fails, continue with HTML parsing
-        if (debugMode) {
-          debugInfo.ytInitialDataParseError = String(e);
-        }
-        console.log("Failed to parse ytInitialData, falling back to HTML parsing");
       }
-    } else {
+    }
+    
+    if (!ytInitialData) {
       if (debugMode) {
         debugInfo.ytInitialDataFound = false;
       }
@@ -374,7 +434,52 @@ export async function POST(request: NextRequest) {
         }
         
         // Extract subscriber count from header (main channel only)
-        const header = ytInitialData?.header?.c4TabbedHeaderRenderer;
+        // Try multiple header structures
+        const header = ytInitialData?.header?.c4TabbedHeaderRenderer ||
+                      ytInitialData?.header?.channelHeaderRenderer ||
+                      ytInitialData?.contents?.twoColumnBrowseResultsRenderer?.tabs?.[0]?.tabRenderer?.content?.richGridRenderer;
+        
+        // Also try to find header in contents
+        if (!header && ytInitialData?.contents?.twoColumnBrowseResultsRenderer?.tabs) {
+          // Look for header in tabs
+          for (const tab of ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs) {
+            if (tab.tabRenderer?.content?.richGridRenderer?.header) {
+              const foundHeader = tab.tabRenderer.content.richGridRenderer.header;
+              if (foundHeader.c4TabbedHeaderRenderer) {
+                const altHeader = foundHeader.c4TabbedHeaderRenderer;
+                if (altHeader.subscriberCountText) {
+                  if (debugMode) debugInfo.foundHeaderInTabs = true;
+                  // Use this header
+                  if (altHeader.subscriberCountText?.simpleText) {
+                    subscriberCount = altHeader.subscriberCountText.simpleText;
+                  } else if (altHeader.subscriberCountText?.runs?.[0]?.text) {
+                    subscriberCount = altHeader.subscriberCountText.runs[0].text;
+                  }
+                  if (altHeader.avatar?.thumbnails?.[0]?.url) {
+                    avatar = altHeader.avatar.thumbnails[0].url;
+                  }
+                  if (altHeader.badges && Array.isArray(altHeader.badges)) {
+                    for (const badge of altHeader.badges) {
+                      const style = badge?.metadataBadgeRenderer?.style;
+                      if (style === "BADGE_STYLE_TYPE_VERIFIED_MUSIC") {
+                        verification = { verified: true, type: 'music' };
+                        break;
+                      } else if (style === "BADGE_STYLE_TYPE_VERIFIED_ARTIST") {
+                        verification = { verified: true, type: 'artist' };
+                        break;
+                      } else if (style === "BADGE_STYLE_TYPE_VERIFIED") {
+                        verification = { verified: true, type: 'standard' };
+                        break;
+                      }
+                    }
+                  }
+                  break;
+                }
+              }
+            }
+          }
+        }
+        
         if (header) {
           if (debugMode) {
             debugInfo.headerFound = true;
