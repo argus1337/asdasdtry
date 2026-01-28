@@ -177,7 +177,6 @@ export default function HowItWorksPage() {
                 </motion.div>
               ))}
             </div>
-            </div>
           </div>
         </div>
       </section>

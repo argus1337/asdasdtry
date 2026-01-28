@@ -182,7 +182,7 @@ export default function VerifyPage() {
                   {data.name.charAt(0).toUpperCase()}
                 </div>
               )}
-            </div>
+            </motion.div>
 
             {/* Content */}
             <motion.div 

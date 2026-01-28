@@ -90,7 +90,7 @@ export default function AboutPage() {
               ))}
             </motion.div>
             <div className="h-px bg-gradient-to-r from-purple-500/50 via-pink-500/50 to-transparent my-12" />
-          </div>
+          </motion.div>
         </div>
       </section>
 
