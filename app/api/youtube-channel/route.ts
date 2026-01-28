@@ -68,8 +68,9 @@ function extractChannelTitle(html: string): string | null {
   return null;
 }
 
-function extractSubscriberCount(html: string): string | null {
+function extractSubscriberCount(html: string, debugInfo?: any): string | null {
   console.log("=== extractSubscriberCount START ===");
+  const debugMode = !!debugInfo;
   // Try multiple patterns to find subscriber count - prioritize main channel data
   // IMPORTANT: Look for patterns that are specifically in the main channel header, not in recommended channels
   // We need to find the FIRST occurrence which should be the main channel
@@ -114,36 +115,66 @@ function extractSubscriberCount(html: string): string | null {
   ];
 
   // Collect all matches first, then prioritize main channel matches
-  const allMatches: Array<{count: string, context: string, patternIndex: number, position: number}> = [];
+  const allMatches: Array<{count: string, context: string, patternIndex: number, position: number, isMainChannel: boolean}> = [];
   
   for (let i = 0; i < patterns.length; i++) {
     const pattern = patterns[i];
     const matches = Array.from(html.matchAll(new RegExp(pattern.source, 'gi')));
     for (const match of matches) {
       if (match && match[1] && match.index !== undefined) {
+        const context = match[0];
+        // Check if this is from main channel (has c4TabbedHeaderRenderer or channelMetadataRenderer in context)
+        const isMainChannel = context.includes('c4TabbedHeaderRenderer') || 
+                             context.includes('channelMetadataRenderer') ||
+                             context.includes('pageHeaderRenderer') ||
+                             (match.index < html.length / 2); // First half of HTML is usually main channel
+        
         allMatches.push({
           count: match[1].trim(),
-          context: match[0],
+          context: context,
           patternIndex: i,
-          position: match.index
+          position: match.index,
+          isMainChannel: isMainChannel
         });
       }
     }
   }
   
-  // Sort by pattern index (earlier patterns are more reliable) and position (earlier in HTML = main channel)
+  // Sort by: 1) isMainChannel flag, 2) pattern index (earlier patterns are more reliable), 3) position (earlier in HTML = main channel)
   allMatches.sort((a, b) => {
+    if (a.isMainChannel !== b.isMainChannel) {
+      return a.isMainChannel ? -1 : 1; // Prefer main channel matches
+    }
     if (a.patternIndex !== b.patternIndex) {
       return a.patternIndex - b.patternIndex; // Prefer earlier patterns
     }
     return a.position - b.position; // Prefer earlier positions
   });
   
-  // Process matches in order, return first valid one
+    // Process matches in order, return first valid one
+  if (debugMode && allMatches.length > 0) {
+    debugInfo.subscriberMatches = allMatches.slice(0, 5).map(m => ({
+      pattern: m.patternIndex,
+      position: m.position,
+      isMainChannel: m.isMainChannel,
+      count: m.count,
+      contextPreview: m.context.substring(0, 100)
+    }));
+    console.log(`Found ${allMatches.length} subscriber count matches`);
+    console.log("First 3 matches:", debugInfo.subscriberMatches.slice(0, 3));
+  }
+  
   for (const match of allMatches) {
-    console.log(`Pattern ${match.patternIndex} matched at position ${match.position}:`, match.context.substring(0, 100));
+    console.log(`Pattern ${match.patternIndex} matched at position ${match.position} (isMainChannel: ${match.isMainChannel}):`, match.context.substring(0, 100));
     let count = match.count;
     console.log("Extracted count:", count);
+    
+    if (debugMode && match === allMatches[0]) {
+      debugInfo.firstMatchPattern = match.patternIndex;
+      debugInfo.firstMatchPosition = match.position;
+      debugInfo.firstMatchIsMainChannel = match.isMainChannel;
+      debugInfo.firstMatchRawCount = count;
+    }
     
     // Clean up the count - remove all non-numeric except K/M/B and decimal point
     count = count.replace(/\s+/g, ""); // Remove spaces
@@ -177,6 +208,10 @@ function extractSubscriberCount(html: string): string | null {
     // Validate we have a number
     if (count.match(/^\d+(\.\d+)?[KMB]?$/i)) {
       console.log("=== extractSubscriberCount RESULT ===", count);
+      if (debugMode) {
+        debugInfo.subscriberFinalCount = count;
+        debugInfo.subscriberSource = `HTML pattern ${match.patternIndex}`;
+      }
       return count;
     }
   }
@@ -434,45 +469,67 @@ export async function POST(request: NextRequest) {
         }
         
         // Extract subscriber count from header (main channel only)
-        // Try multiple header structures
-        const header = ytInitialData?.header?.c4TabbedHeaderRenderer ||
-                      ytInitialData?.header?.channelHeaderRenderer ||
-                      ytInitialData?.contents?.twoColumnBrowseResultsRenderer?.tabs?.[0]?.tabRenderer?.content?.richGridRenderer;
+        // Try multiple header structures - YouTube uses different structures
+        let header = ytInitialData?.header?.c4TabbedHeaderRenderer ||
+                    ytInitialData?.header?.channelHeaderRenderer ||
+                    ytInitialData?.header?.pageHeaderRenderer;
         
-        // Also try to find header in contents
-        if (!header && ytInitialData?.contents?.twoColumnBrowseResultsRenderer?.tabs) {
-          // Look for header in tabs
-          for (const tab of ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs) {
-            if (tab.tabRenderer?.content?.richGridRenderer?.header) {
-              const foundHeader = tab.tabRenderer.content.richGridRenderer.header;
-              if (foundHeader.c4TabbedHeaderRenderer) {
-                const altHeader = foundHeader.c4TabbedHeaderRenderer;
-                if (altHeader.subscriberCountText) {
-                  if (debugMode) debugInfo.foundHeaderInTabs = true;
-                  // Use this header
-                  if (altHeader.subscriberCountText?.simpleText) {
-                    subscriberCount = altHeader.subscriberCountText.simpleText;
-                  } else if (altHeader.subscriberCountText?.runs?.[0]?.text) {
-                    subscriberCount = altHeader.subscriberCountText.runs[0].text;
-                  }
-                  if (altHeader.avatar?.thumbnails?.[0]?.url) {
-                    avatar = altHeader.avatar.thumbnails[0].url;
-                  }
-                  if (altHeader.badges && Array.isArray(altHeader.badges)) {
-                    for (const badge of altHeader.badges) {
-                      const style = badge?.metadataBadgeRenderer?.style;
-                      if (style === "BADGE_STYLE_TYPE_VERIFIED_MUSIC") {
-                        verification = { verified: true, type: 'music' };
-                        break;
-                      } else if (style === "BADGE_STYLE_TYPE_VERIFIED_ARTIST") {
-                        verification = { verified: true, type: 'artist' };
-                        break;
-                      } else if (style === "BADGE_STYLE_TYPE_VERIFIED") {
-                        verification = { verified: true, type: 'standard' };
-                        break;
-                      }
-                    }
-                  }
+        // Also check twoColumnBrowseResultsRenderer structure
+        const twoColumn = ytInitialData?.contents?.twoColumnBrowseResultsRenderer;
+        if (twoColumn) {
+          // Check tabs for header
+          if (twoColumn.tabs && Array.isArray(twoColumn.tabs)) {
+            for (const tab of twoColumn.tabs) {
+              if (tab.tabRenderer?.content?.richGridRenderer?.header?.c4TabbedHeaderRenderer) {
+                header = tab.tabRenderer.content.richGridRenderer.header.c4TabbedHeaderRenderer;
+                if (debugMode) debugInfo.foundHeaderInTabs = true;
+                break;
+              }
+            }
+          }
+          
+          // Check secondaryContents for header
+          if (!header && twoColumn.secondaryContents?.channelHeaderRenderer) {
+            header = twoColumn.secondaryContents.channelHeaderRenderer;
+            if (debugMode) debugInfo.foundHeaderInSecondaryContents = true;
+          }
+        }
+        
+        // Try pageHeaderRenderer structure
+        if (!header && ytInitialData?.header?.pageHeaderRenderer) {
+          const pageHeader = ytInitialData.header.pageHeaderRenderer;
+          if (debugMode) debugInfo.usingPageHeaderRenderer = true;
+          
+          // Extract from pageHeaderRenderer
+          if (pageHeader.content?.channelHeaderViewModel) {
+            const channelHeader = pageHeader.content.channelHeaderViewModel;
+            
+            // Subscriber count
+            if (channelHeader.subscriberCountText?.simpleText) {
+              subscriberCount = channelHeader.subscriberCountText.simpleText;
+              if (debugMode) debugInfo.subscriberSource = "pageHeaderRenderer.simpleText";
+            } else if (channelHeader.subscriberCountText?.runs?.[0]?.text) {
+              subscriberCount = channelHeader.subscriberCountText.runs[0].text;
+              if (debugMode) debugInfo.subscriberSource = "pageHeaderRenderer.runs";
+            }
+            
+            // Avatar
+            if (channelHeader.avatar?.thumbnails?.[0]?.url) {
+              avatar = channelHeader.avatar.thumbnails[0].url;
+            }
+            
+            // Verification badges
+            if (channelHeader.badges && Array.isArray(channelHeader.badges)) {
+              for (const badge of channelHeader.badges) {
+                const style = badge?.metadataBadgeRenderer?.style;
+                if (style === "BADGE_STYLE_TYPE_VERIFIED_MUSIC") {
+                  verification = { verified: true, type: 'music' };
+                  break;
+                } else if (style === "BADGE_STYLE_TYPE_VERIFIED_ARTIST") {
+                  verification = { verified: true, type: 'artist' };
+                  break;
+                } else if (style === "BADGE_STYLE_TYPE_VERIFIED") {
+                  verification = { verified: true, type: 'standard' };
                   break;
                 }
               }
@@ -567,7 +624,7 @@ export async function POST(request: NextRequest) {
       console.log("=== Avatar from HTML ===", avatar ? "Found" : "Not found");
     }
     if (!subscriberCount) {
-      subscriberCount = extractSubscriberCount(html);
+      subscriberCount = extractSubscriberCount(html, debugMode ? debugInfo : undefined);
       console.log("=== Subscriber count from HTML ===", subscriberCount);
     }
     // Only check verification from HTML if we didn't get it from ytInitialData
