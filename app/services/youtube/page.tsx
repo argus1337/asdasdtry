@@ -74,7 +74,7 @@ export default function YouTubePage() {
               >
                 <Link href="/contact">
                   <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg">
-                    Collaborations
+                    Join CreateSync
                   </Button>
                 </Link>
               </motion.div>
