@@ -6,8 +6,8 @@ import { motion } from "framer-motion";
 const clients = [
   { name: "Disney", logo: "/images/62833b96aef969eb76b8faf7_Disney_wordmark_1.svg" },
   { name: "Amazon", logo: "/images/62833b9627cc9965e37886e9_Amazon_logo_1.svg" },
-  { name: "GNC", logo: "/images/6658a24915de1e79bf4cac2a_gnc.png" },
-  { name: "Lyft", logo: "/images/6418996a19486aace8d5e835_lyft-logo_1.svg" },
+  { name: "Netflix", logo: "/images/64189ad736481a26d5793180_Netflix_2015_logo_1.svg" },
+  { name: "Spotify", logo: "/images/6578dbb331aefb3477afd811_Spotifylogo.webp" },
   { name: "Crocs", logo: "/images/6658a289fff29b1650697847_crocs.png" },
 ];
 

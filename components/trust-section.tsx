@@ -12,8 +12,8 @@ const trustedClients = [
   { name: "Amazon", logo: "/images/62833b9627cc9965e37886e9_Amazon_logo_1.svg" },
   { name: "TurboTax", logo: "/images/62bbca4317573e92e2392746_TurboTax-Logo.png" },
   { name: "McDonald's", logo: "/images/62bbcb2961e2f315ef92b0e4_McDonald's_Golden_Arches.svg.png" },
-  { name: "Target", logo: "/images/62bbca43fb74e1e7e26aa8dd_Target.png" },
-  { name: "J.Crew", logo: "/images/655d2edc32fa44f902b50909_jcrewlogo.svg" },
+  { name: "Spotify", logo: "/images/6578dbb331aefb3477afd811_Spotifylogo.webp" },
+  { name: "Adobe", logo: "/images/62bbca1f33f884151ec446a8_Adobe_Corporate_Logo.png" },
 ];
 
 export function TrustSection() {

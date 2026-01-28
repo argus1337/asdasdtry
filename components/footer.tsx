@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const footerLinks = {
   services: [
@@ -34,9 +35,13 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-4 lg:col-span-1">
             <Link href="/" className="inline-block mb-4">
-              <span className="text-2xl font-bold gradient-text">
-                CreateSync
-              </span>
+              <Image
+                src="/images/createsync-logo-full.png"
+                alt="CreateSync"
+                width={140}
+                height={40}
+                className="h-8 w-auto object-contain"
+              />
             </Link>
             <p className="text-sm text-muted-foreground mb-6 max-w-xs">
               The full-service influencer marketing agency connecting brands

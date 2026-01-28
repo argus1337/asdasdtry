@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 
@@ -95,7 +96,7 @@ export function ServicesSection() {
             </motion.div>
           </motion.div>
 
-          {/* Right Column - Process Flow */}
+          {/* Right Column - Visual */}
           <motion.div 
             className="flex-1 w-full hidden lg:block"
             initial={{ opacity: 0, x: 50 }}
@@ -103,31 +104,15 @@ export function ServicesSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="relative max-w-md mx-auto">
-              <div className="space-y-6">
-                {[
-                  { step: "1", title: "Strategy", desc: "We analyze your goals" },
-                  { step: "2", title: "Sourcing", desc: "Find perfect creators" },
-                  { step: "3", title: "Execution", desc: "Manage campaigns" },
-                  { step: "4", title: "Analysis", desc: "Track performance" },
-                ].map((item, index) => (
-                  <motion.div
-                    key={item.step}
-                    className="flex items-start gap-4"
-                    initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                  >
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/30 flex items-center justify-center text-white font-bold">
-                      {item.step}
-                    </div>
-                    <div className="flex-1 pt-2">
-                      <div className="text-white font-semibold mb-1">{item.title}</div>
-                      <div className="text-white/60 text-sm">{item.desc}</div>
-                    </div>
-                  </motion.div>
-                ))}
+            <div className="relative aspect-[4/3] max-w-md mx-auto">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 rounded-3xl border border-border/30 overflow-hidden">
+                <Image
+                  src="/images/60902c3381b69cf1a577e06d_Group_15.png"
+                  alt="CreateSync Services"
+                  fill
+                  className="object-cover opacity-60"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
               </div>
             </div>
           </motion.div>

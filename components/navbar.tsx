@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
@@ -89,7 +90,14 @@ export function Navbar() {
             whileTap={{ scale: 0.95 }}
           >
             <Link href="/" className="flex items-center">
-              <span className="text-xl sm:text-2xl font-bold gradient-text">CreateSync</span>
+              <Image
+                src="/images/createsync-logo-full.png"
+                alt="CreateSync"
+                width={140}
+                height={40}
+                className="h-8 sm:h-10 w-auto object-contain"
+                priority
+              />
             </Link>
           </motion.div>
 
