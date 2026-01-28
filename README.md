@@ -167,12 +167,21 @@ npm install
      ```
      TELEGRAM_BOT_TOKEN=ваш_токен_бота
      TELEGRAM_CHAT_ID=ваш_chat_id
+     NEXT_PUBLIC_SITE_URL=https://ваш-домен.vercel.app
      ```
+   - `NEXT_PUBLIC_SITE_URL` - URL вашего сайта (для защиты от прямых запросов к API)
 
 4. **Для Vercel:**
    - Перейдите в настройки проекта на Vercel
    - Откройте раздел "Environment Variables"
-   - Добавьте `TELEGRAM_BOT_TOKEN` и `TELEGRAM_CHAT_ID`
+   - Добавьте `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` и `NEXT_PUBLIC_SITE_URL`
+
+**Защита от спама:**
+API защищен от злоупотреблений следующими мерами:
+- ✅ Rate limiting: максимум 3 запроса в минуту с одного IP
+- ✅ Проверка origin/referer: блокировка прямых запросов (Postman, Python скрипты)
+- ✅ Валидация данных: проверка формата email, URL и длины полей
+- ✅ Определение страны по IP для мониторинга
 
 После настройки при каждой отправке формы вы будете получать уведомление в Telegram с информацией:
 - Канал (название и количество подписчиков)
