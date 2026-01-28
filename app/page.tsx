@@ -8,7 +8,6 @@ import { TestimonialSection } from "@/components/testimonial-section";
 import { CEOStorySection } from "@/components/ceo-story-section";
 import { CEOMessageSection } from "@/components/ceo-message-section";
 import { FAQSection } from "@/components/faq-section";
-import { ContactSection } from "@/components/contact-section";
 import { Footer } from "@/components/footer";
 
 export default function Home() {
@@ -24,7 +23,6 @@ export default function Home() {
       <CEOStorySection />
       <CEOMessageSection />
       <FAQSection />
-      <ContactSection />
       <Footer />
     </main>
   );

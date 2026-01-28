@@ -288,6 +288,14 @@ export function ContactSection() {
                       onChange={(e) =>
                         setFormData({ ...formData, channelUrl: e.target.value })
                       }
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          if (formData.channelUrl.trim() && !isLoading) {
+                            parseYouTubeChannel();
+                          }
+                        }
+                      }}
                       className="flex-1 px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base bg-input border border-border rounded-xl text-white placeholder:text-white/40 focus:border-primary focus:bg-input/80 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                       placeholder="@yourchannel or full URL"
                     />

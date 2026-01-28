@@ -25,144 +25,64 @@ export function CEOStorySection() {
 
         {/* Visual */}
         <motion.div 
-          className="relative max-w-4xl mx-auto mb-12"
+          className="relative max-w-5xl mx-auto mb-12"
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <div className="aspect-[16/9] bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 rounded-3xl border border-border overflow-hidden">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="flex items-center gap-8 sm:gap-16">
-                {/* Brand Side */}
-                <motion.div 
-                  className="text-center"
-                  initial={{ opacity: 0, x: -50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  whileHover={{ scale: 1.1 }}
-                >
-                  <motion.div 
-                    className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-br from-secondary/30 to-secondary/10 flex items-center justify-center mb-3 mx-auto border border-secondary/30"
-                    animate={{ 
-                      boxShadow: [
-                        "0 0 0px rgba(59, 130, 246, 0)",
-                        "0 0 20px rgba(59, 130, 246, 0.3)",
-                        "0 0 0px rgba(59, 130, 246, 0)",
-                      ],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <span className="text-3xl sm:text-4xl">🏢</span>
-                  </motion.div>
-                  <span className="text-sm sm:text-base font-medium text-white/80">
-                    Brands
-                  </span>
-                </motion.div>
-
-                {/* Connection */}
-                <motion.div 
-                  className="flex flex-col items-center gap-2"
-                  initial={{ opacity: 0, scale: 0 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                >
-                  <motion.svg
-                    className="w-16 sm:w-24 h-8"
-                    viewBox="0 0 100 30"
-                    fill="none"
-                    animate={{ 
-                      pathLength: [0, 1],
-                    }}
-                    transition={{ duration: 1, delay: 0.5 }}
-                  >
-                    <path
-                      d="M0 15 H40 M60 15 H100"
-                      stroke="url(#connectionGradient)"
-                      strokeWidth="2"
-                      strokeDasharray="4 4"
-                    />
-                    <motion.circle 
-                      cx="50" 
-                      cy="15" 
-                      r="12" 
-                      fill="url(#connectionGradient)"
-                      animate={{ 
-                        scale: [1, 1.2, 1],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
-                    />
-                    <text
-                      x="50"
-                      y="19"
-                      textAnchor="middle"
-                      fill="white"
-                      fontSize="12"
-                    >
-                      ❤️
-                    </text>
-                    <defs>
-                      <linearGradient
-                        id="connectionGradient"
-                        x1="0%"
-                        y1="0%"
-                        x2="100%"
-                        y2="0%"
-                      >
-                        <stop offset="0%" stopColor="#8b5cf6" />
-                        <stop offset="50%" stopColor="#3b82f6" />
-                        <stop offset="100%" stopColor="#06b6d4" />
-                      </linearGradient>
-                    </defs>
-                  </motion.svg>
-                  <span className="text-xs sm:text-sm font-medium gradient-text">
-                    CreateSync
-                  </span>
-                </motion.div>
-
-                {/* Creator Side */}
-                <motion.div 
-                  className="text-center"
-                  initial={{ opacity: 0, x: 50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  whileHover={{ scale: 1.1 }}
-                >
-                  <motion.div 
-                    className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center mb-3 mx-auto border border-accent/30"
-                    animate={{ 
-                      boxShadow: [
-                        "0 0 0px rgba(6, 182, 212, 0)",
-                        "0 0 20px rgba(6, 182, 212, 0.3)",
-                        "0 0 0px rgba(6, 182, 212, 0)",
-                      ],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      delay: 1,
-                    }}
-                  >
-                    <span className="text-3xl sm:text-4xl">🎬</span>
-                  </motion.div>
-                  <span className="text-sm sm:text-base font-medium text-white/80">
-                    Creators
-                  </span>
-                </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            {/* Brand Side */}
+            <motion.div 
+              className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 rounded-2xl border border-blue-500/20 p-6 sm:p-8 text-center"
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              whileHover={{ scale: 1.02, borderColor: "rgba(59, 130, 246, 0.4)" }}
+            >
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 mx-auto shadow-lg">
+                <svg className="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
               </div>
-            </div>
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-2">Brands</h3>
+              <p className="text-sm text-white/70">Find the perfect creators for your campaigns</p>
+            </motion.div>
+
+            {/* Center - CreateSync */}
+            <motion.div 
+              className="bg-gradient-to-br from-purple-500/20 to-pink-500/10 rounded-2xl border-2 border-purple-500/30 p-6 sm:p-8 text-center flex flex-col items-center justify-center"
+              initial={{ opacity: 0, scale: 0 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4, type: "spring" }}
+              whileHover={{ scale: 1.05 }}
+            >
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-4 shadow-lg">
+                <span className="text-2xl sm:text-3xl font-bold text-white">CS</span>
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold gradient-text mb-2">CreateSync</h3>
+              <p className="text-xs sm:text-sm text-white/70">The perfect match</p>
+            </motion.div>
+
+            {/* Creator Side */}
+            <motion.div 
+              className="bg-gradient-to-br from-cyan-500/10 to-cyan-600/5 rounded-2xl border border-cyan-500/20 p-6 sm:p-8 text-center"
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              whileHover={{ scale: 1.02, borderColor: "rgba(6, 182, 212, 0.4)" }}
+            >
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-xl flex items-center justify-center mb-4 mx-auto shadow-lg">
+                <svg className="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-2">Creators</h3>
+              <p className="text-sm text-white/70">Get matched with top brands</p>
+            </motion.div>
           </div>
         </motion.div>
 

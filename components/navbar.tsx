@@ -151,7 +151,7 @@ export function Navbar() {
                 href="/contact"
                 className="ml-4 px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl transition-all whitespace-nowrap"
               >
-                Collaborations
+                Get Started
               </Link>
             </motion.div>
           </div>
@@ -227,7 +227,7 @@ export function Navbar() {
                 className="block w-full text-center px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl transition-all"
                 onClick={() => setIsOpen(false)}
               >
-                Collaborations
+                Get Started
               </Link>
             </div>
           </div>
