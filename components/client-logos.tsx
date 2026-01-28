@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 const clients = [
   { name: "Disney", logo: "/images/62833b96aef969eb76b8faf7_Disney_wordmark_1.svg" },
@@ -14,10 +17,18 @@ export function ClientLogos() {
     <section className="py-12 lg:py-16 border-y border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8 items-center">
-          {clients.map((client) => (
-            <div
+          {clients.map((client, index) => (
+            <motion.div
               key={client.name}
               className="flex items-center justify-center p-4 logo-grayscale"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+              whileHover={{ 
+                scale: 1.1,
+                transition: { duration: 0.2 }
+              }}
             >
               <Image
                 src={client.logo}
@@ -26,7 +37,7 @@ export function ClientLogos() {
                 height={60}
                 className="h-8 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity"
               />
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

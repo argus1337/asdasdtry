@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 const pressLogos = [
   { name: "Business Insider", logo: "/images/6760831d67abf4e09f92f4d9_bi-logo.png" },
@@ -15,17 +18,31 @@ export function FeaturedSection() {
   return (
     <section className="py-16 lg:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
           <h2 className="text-2xl sm:text-3xl font-semibold text-muted-foreground">
             Featured in:
           </h2>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8">
-          {pressLogos.map((logo) => (
-            <div
+          {pressLogos.map((logo, index) => (
+            <motion.div
               key={logo.name}
               className="flex items-center justify-center p-4 sm:p-6 logo-grayscale"
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+              whileHover={{ 
+                scale: 1.1,
+                transition: { duration: 0.2 }
+              }}
             >
               <Image
                 src={logo.logo}
@@ -34,7 +51,7 @@ export function FeaturedSection() {
                 height={60}
                 className="h-10 w-auto object-contain opacity-40 hover:opacity-80 transition-opacity"
               />
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
