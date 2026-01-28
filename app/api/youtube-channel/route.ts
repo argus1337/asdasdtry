@@ -78,10 +78,13 @@ function extractSubscriberCount(html: string): string | null {
     /(\d+(?:\s+\d+)?)\s*тыс\.?\s*подписчик/i,
     /(\d+(?:[.,]\d+)?)\s*тыс\.?\s*подписчик/i,
     /(\d+(?:[.,]\d+)?)\s*млн\.?\s*подписчик/i,
+    /(\d+)\s*млн\.?\s*подписчик/i,
     
-    // Pattern with space separator (41 тыс)
+    // Pattern with space separator (41 тыс, 2 млн)
     /(\d+)\s+тыс/i,
     /(\d+)\s+млн/i,
+    // More specific patterns for "2 млн подписчиков"
+    /(\d+)\s*млн/i,
   ];
 
   for (const pattern of patterns) {
@@ -102,12 +105,11 @@ function extractSubscriberCount(html: string): string | null {
           count = numOnly + "K";
         }
         
-        // Handle Russian format "млн" -> "M"
-        if (html.includes("млн") && !count.includes("M")) {
-          const context = match[0];
-          if (context.includes("млн")) {
-            count = count.replace(/[^\d.]/g, "") + "M";
-          }
+        // Handle Russian format "млн" -> "M" (2 млн -> 2M)
+        const context = match[0];
+        if (context.includes("млн") && !count.includes("M")) {
+          const numOnly = count.replace(/[^\d.]/g, "");
+          count = numOnly + "M";
         }
         
         // Remove text suffixes
@@ -142,7 +144,9 @@ function extractSubscriberCount(html: string): string | null {
       
       // Look for numbers in the context
       const numberPatterns = [
+        /(\d+)\s*млн/i,  // Check for миллионов first
         /(\d+)\s*тыс/i,
+        /(\d+(?:[.,]\d+)?)\s*млн/i,
         /(\d+(?:[.,]\d+)?)\s*тыс/i,
         /(\d+(?:[.,]\d+)?[KMB]?)/,
       ];
@@ -151,10 +155,11 @@ function extractSubscriberCount(html: string): string | null {
         const numMatch = context.match(numPattern);
         if (numMatch && numMatch[1]) {
           let count = numMatch[1].trim();
-          if (context.includes("тыс") && !count.includes("K") && !count.includes("M")) {
-            count = count.replace(/[^\d.]/g, "") + "K";
-          } else if (context.includes("млн") && !count.includes("M")) {
+          // Prioritize миллионов over тысяч
+          if (context.includes("млн") && !count.includes("M")) {
             count = count.replace(/[^\d.]/g, "") + "M";
+          } else if (context.includes("тыс") && !count.includes("K") && !count.includes("M")) {
+            count = count.replace(/[^\d.]/g, "") + "K";
           }
           count = count.replace(",", ".");
           if (count.match(/^\d+(\.\d+)?[KMB]?$/i)) {
@@ -218,29 +223,44 @@ function checkVerified(html: string): { verified: boolean; type: 'standard' | 'm
   const standardPatterns = [
     /"isVerified":\s*true/,
     /"badgeStyle":"BADGE_STYLE_TYPE_VERIFIED"/,
+    /"BADGE_STYLE_TYPE_VERIFIED"/,
     /verification-badge/,
     /verified-icon/,
     /yt-icon-verified/,
-    // SVG path для галочки
+    // SVG path для галочки (разные варианты)
     /M9\.4\s+16\.6L4\.6\s+12l1\.4-1\.4\s+3\.6\s+3\.6L18\.6\s+7l1\.4\s+1\.4z/,
     /M9\s+16\.17L4\.83\s+12l-1\.42\s+1\.41L9\s+19\s+21\s+7l-1\.41-1\.41z/,
+    // Более общие паттерны для галочки
+    /M9[.\s]+16/,
+    // Проверка на наличие badge без указания типа (обычно это стандартная верификация)
+    /"badges":\s*\[[^\]]*"BADGE_STYLE_TYPE_VERIFIED"/,
   ];
   
-  for (const pattern of standardPatterns) {
-    if (pattern.test(html)) {
-      // Убеждаемся что это не музыкальная верификация
-      let isMusic = false;
-      for (const musicPattern of musicPatterns) {
-        if (musicPattern.test(html)) {
-          isMusic = true;
-          break;
-        }
+  // Сначала проверяем что это не музыкальная верификация
+  let isMusic = false;
+  for (const musicPattern of musicPatterns) {
+    if (musicPattern.test(html)) {
+      isMusic = true;
+      break;
+    }
+  }
+  // Также проверяем SVG путь ноты
+  if (!isMusic && (html.includes('M12') && html.includes('v10.55') && html.includes('c-.59-.34'))) {
+    isMusic = true;
+  }
+  
+  // Если не музыкальная, проверяем стандартную
+  if (!isMusic) {
+    for (const pattern of standardPatterns) {
+      if (pattern.test(html)) {
+        return { verified: true, type: 'standard' };
       }
-      // Также проверяем SVG путь ноты
-      if (!isMusic && (html.includes('M12') && html.includes('v10.55') && html.includes('c-.59-.34'))) {
-        isMusic = true;
-      }
-      if (!isMusic) {
+    }
+    
+    // Дополнительная проверка: если есть упоминание verified, но нет специфичного типа
+    if (html.includes('verified') || html.includes('VERIFIED')) {
+      // Проверяем что это не музыкальная и не артист
+      if (!html.includes('MUSIC') && !html.includes('ARTIST')) {
         return { verified: true, type: 'standard' };
       }
     }
