@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export function CEOStorySection() {
   return (
@@ -59,8 +60,14 @@ export function CEOStorySection() {
               transition={{ duration: 0.5, delay: 0.4, type: "spring" }}
               whileHover={{ scale: 1.05 }}
             >
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-4 shadow-lg">
-                <span className="text-2xl sm:text-3xl font-bold text-white">CS</span>
+              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-4 shadow-lg p-3">
+                <Image
+                  src="/images/createsync-logo-icon.png"
+                  alt="CreateSync"
+                  width={80}
+                  height={80}
+                  className="w-full h-full object-contain"
+                />
               </div>
               <h3 className="text-lg sm:text-xl font-bold gradient-text mb-2">CreateSync</h3>
               <p className="text-xs sm:text-sm text-white/70">The perfect match</p>

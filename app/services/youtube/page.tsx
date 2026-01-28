@@ -180,30 +180,13 @@ export default function YouTubePage() {
             ].map((item, index) => (
               <div
                 key={index}
-                className={`grid grid-cols-1 md:grid-cols-2 gap-8 items-center ${
-                  item.side === "right" ? "md:flex-row-reverse" : ""
-                }`}
+                className="max-w-3xl mx-auto"
               >
-                {item.side === "left" && (
-                  <>
-                    <div>
-                      <h3 className="text-2xl font-semibold text-white mb-4">
-                        {item.title}
-                      </h3>
-                    </div>
-                    <div className="w-full h-48 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl" />
-                  </>
-                )}
-                {item.side === "right" && (
-                  <>
-                    <div className="w-full h-48 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl md:order-2" />
-                    <div className="md:order-1">
-                      <h3 className="text-2xl font-semibold text-white mb-4">
-                        {item.title}
-                      </h3>
-                    </div>
-                  </>
-                )}
+                <div className={item.side === "right" ? "md:order-1" : ""}>
+                  <h3 className="text-2xl font-semibold text-white mb-4">
+                    {item.title}
+                  </h3>
+                </div>
               </div>
             ))}
           </div>
