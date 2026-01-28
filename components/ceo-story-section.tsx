@@ -60,12 +60,12 @@ export function CEOStorySection() {
               transition={{ duration: 0.5, delay: 0.4, type: "spring" }}
               whileHover={{ scale: 1.05 }}
             >
-              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-4 shadow-lg p-3">
+              <div className="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-4 shadow-lg p-2 sm:p-3">
                 <Image
                   src="/images/createsync-logo-icon.png"
                   alt="CreateSync"
-                  width={80}
-                  height={80}
+                  width={120}
+                  height={120}
                   className="w-full h-full object-contain"
                 />
               </div>

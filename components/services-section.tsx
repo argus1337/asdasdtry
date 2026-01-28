@@ -17,10 +17,10 @@ export function ServicesSection() {
   return (
     <section id="services" className="py-16 lg:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center gap-12 lg:gap-16">
-          {/* Content */}
+        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+          {/* Left Column - Content */}
           <motion.div 
-            className="w-full max-w-4xl text-center lg:text-left"
+            className="flex-1 text-center lg:text-left"
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -96,6 +96,26 @@ export function ServicesSection() {
             </motion.div>
           </motion.div>
 
+          {/* Right Column - Visual */}
+          <motion.div 
+            className="flex-1 w-full hidden lg:block"
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="relative aspect-[4/3] max-w-md mx-auto">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 rounded-3xl border border-border/30 overflow-hidden">
+                <Image
+                  src="/images/60902c3381b69cf1a577e06d_Group_15.png"
+                  alt="CreateSync Services"
+                  fill
+                  className="object-cover opacity-70"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>
