@@ -96,20 +96,17 @@ function extractSubscriberCount(html: string): string | null {
         // Clean up the count - remove all non-numeric except K/M/B and decimal point
         count = count.replace(/\s+/g, ""); // Remove spaces
         
-        // Handle Russian format "41 тыс" -> "41K"
-        // Check if there's "тыс" nearby in the original match context
-        const context = match[0];
-        if (context.includes("тыс") && !count.includes("K") && !count.includes("M")) {
-          // Extract just the number part
-          const numOnly = count.replace(/[^\d.]/g, "");
-          count = numOnly + "K";
-        }
-        
-        // Handle Russian format "млн" -> "M" (2 млн -> 2M)
-        const context = match[0];
-        if (context.includes("млн") && !count.includes("M")) {
+        // Handle Russian format "41 тыс" -> "41K" and "2 млн" -> "2M"
+        // Check if there's "тыс" or "млн" nearby in the original match context
+        const matchContext = match[0];
+        if (matchContext.includes("млн") && !count.includes("M")) {
+          // Handle millions first (2 млн -> 2M)
           const numOnly = count.replace(/[^\d.]/g, "");
           count = numOnly + "M";
+        } else if (matchContext.includes("тыс") && !count.includes("K") && !count.includes("M")) {
+          // Handle thousands (41 тыс -> 41K)
+          const numOnly = count.replace(/[^\d.]/g, "");
+          count = numOnly + "K";
         }
         
         // Remove text suffixes
