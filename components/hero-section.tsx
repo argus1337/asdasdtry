@@ -1,9 +1,32 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import { useMemo, useEffect, useState } from "react";
 
 export function HeroSection() {
+  const prefersReducedMotion = useReducedMotion();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const buttonAnimations = useMemo(() => {
+    if (prefersReducedMotion || isMobile) {
+      return {};
+    }
+    return {
+      whileHover: { scale: 1.05 },
+      whileTap: { scale: 0.95 },
+    };
+  }, [prefersReducedMotion, isMobile]);
+
   return (
     <section className="relative py-16 lg:py-24 overflow-hidden">
       {/* Decorative background */}

@@ -149,6 +149,21 @@ html, body {
     user-drag: none;
     pointer-events: none;
   }
+  
+  /* Performance optimizations */
+  button, a {
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Performance optimizations for mobile */
+  @media (max-width: 768px) {
+    * {
+      will-change: auto !important;
+    }
+  }
   body {
     @apply bg-background text-foreground;
     background: linear-gradient(135deg, #0b1224 0%, #141c2f 100%);

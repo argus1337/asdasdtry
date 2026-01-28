@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Menu, X, ChevronDown } from "lucide-react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 
 const navItems = [
   {
@@ -45,10 +45,34 @@ export function Navbar() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const prefersReducedMotion = useReducedMotion();
   const { scrollY } = useScroll();
   
   const navbarOpacity = useTransform(scrollY, [0, 100], [0.95, 1]);
   const navbarBlur = useTransform(scrollY, [0, 100], [10, 20]);
+  
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Optimized animation props
+  const buttonAnimations = useMemo(() => {
+    if (prefersReducedMotion || isMobile) {
+      return {};
+    }
+    return {
+      whileHover: { scale: 1.05 },
+      whileTap: { scale: 0.95 },
+    };
+  }, [prefersReducedMotion, isMobile]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -86,8 +110,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            {...(prefersReducedMotion || isMobile ? {} : buttonAnimations)}
           >
             <Link href="/" className="flex items-center">
               <Image

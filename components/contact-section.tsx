@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { CheckCircle, Loader2, Youtube, Instagram } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 interface ChannelData {
   title: string;
@@ -48,6 +48,39 @@ export function ContactSection() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showChannelConfirm, setShowChannelConfirm] = useState(false);
   const [brandRef, setBrandRef] = useState<string | null>(null);
+  const prefersReducedMotion = useReducedMotion();
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Optimized animation props - disable on mobile or reduced motion
+  const buttonAnimations = useMemo(() => {
+    if (prefersReducedMotion || isMobile) {
+      return {};
+    }
+    return {
+      whileHover: { scale: 1.05 },
+      whileTap: { scale: 0.95 },
+    };
+  }, [prefersReducedMotion, isMobile]);
+
+  const platformButtonAnimations = useMemo(() => {
+    if (prefersReducedMotion || isMobile) {
+      return {};
+    }
+    return {
+      whileHover: { scale: 1.12, y: -4 },
+      whileTap: { scale: 0.95 },
+    };
+  }, [prefersReducedMotion, isMobile]);
 
   // Read brand parameter from URL and save to localStorage
   useEffect(() => {
@@ -339,12 +372,12 @@ export function ContactSection() {
                   type="button"
                   onClick={() => !platform.disabled && handlePlatformSelect(platform.id)}
                   disabled={platform.disabled}
-                  initial={{ opacity: 0, scale: 0.9 }}
+                  initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
-                  whileHover={!platform.disabled ? { scale: 1.12, y: -4 } : {}}
-                  whileTap={!platform.disabled ? { scale: 0.95 } : {}}
+                  transition={{ duration: prefersReducedMotion ? 0 : 0.3, delay: prefersReducedMotion ? 0 : index * 0.1 }}
+                  whileHover={!platform.disabled && !prefersReducedMotion && !isMobile ? platformButtonAnimations.whileHover : {}}
+                  whileTap={!platform.disabled && !prefersReducedMotion && !isMobile ? platformButtonAnimations.whileTap : {}}
                   className={`flex flex-col items-center justify-center gap-2 sm:gap-3 p-3 sm:p-6 rounded-xl border-2 transition-all relative ${
                     platform.disabled
                       ? "border-border/30 bg-card/20 opacity-50 cursor-not-allowed"
@@ -406,9 +439,9 @@ export function ContactSection() {
                       type="button"
                       onClick={parseYouTubeChannel}
                       disabled={isLoading || !formData.channelUrl}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                      {...(prefersReducedMotion || isMobile ? {} : buttonAnimations)}
                       className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-semibold text-white gradient-button rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      style={{ willChange: 'transform' }}
                     >
                       {isLoading ? (
                         <>
@@ -447,8 +480,7 @@ export function ContactSection() {
                         onClick={() => {
                           setFormData({ ...formData, channelUrl: example });
                         }}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        {...(prefersReducedMotion || isMobile ? {} : buttonAnimations)}
                         className="px-3 py-1.5 text-xs sm:text-sm text-white/70 bg-card/50 border border-border rounded-lg hover:border-primary/50 hover:text-white transition-all"
                       >
                         {example}
@@ -574,8 +606,7 @@ export function ContactSection() {
                           <div className="flex gap-3">
                             <motion.button
                               onClick={() => setShowChannelConfirm(false)}
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
+                              {...(prefersReducedMotion || isMobile ? {} : buttonAnimations)}
                               className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl transition-all"
                             >
                               Yes, that's me
@@ -586,8 +617,7 @@ export function ContactSection() {
                                 setChannelData(null);
                                 setFormData({ ...formData, channelUrl: "" });
                               }}
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
+                              {...(prefersReducedMotion || isMobile ? {} : buttonAnimations)}
                               className="flex-1 px-6 py-3 bg-card/50 border border-border text-white/70 hover:text-white hover:border-primary/50 font-semibold rounded-xl transition-all"
                             >
                               No, go back
@@ -662,9 +692,8 @@ export function ContactSection() {
                       initial={{ opacity: 0, scale: 0.9 }}
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: true }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                      transition={{ duration: prefersReducedMotion ? 0 : 0.3, delay: prefersReducedMotion ? 0 : index * 0.1 }}
+                      {...(prefersReducedMotion || isMobile ? {} : buttonAnimations)}
                       className={`flex-1 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border-2 font-medium transition-all ${
                         formData.hasAgency === option
                           ? "border-primary bg-primary/10 text-white"
@@ -692,9 +721,8 @@ export function ContactSection() {
                       initial={{ opacity: 0, scale: 0.9 }}
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: true }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                      transition={{ duration: prefersReducedMotion ? 0 : 0.3, delay: prefersReducedMotion ? 0 : index * 0.1 }}
+                      {...(prefersReducedMotion || isMobile ? {} : buttonAnimations)}
                       className={`flex-1 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border-2 font-medium transition-all ${
                         formData.hasBrandDeals === option
                           ? "border-primary bg-primary/10 text-white"
@@ -716,9 +744,9 @@ export function ContactSection() {
               >
                 <motion.button
                   type="submit"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  {...(prefersReducedMotion || isMobile ? {} : buttonAnimations)}
                   className="w-full sm:w-auto px-6 sm:px-12 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white gradient-button rounded-xl transition-all"
+                  style={{ willChange: 'transform' }}
                 >
                   Submit Application
                 </motion.button>
