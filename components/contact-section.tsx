@@ -37,7 +37,6 @@ export function ContactSection() {
     channelUrl: "",
     name: "",
     email: "",
-    phone: "",
     hasAgency: "",
     hasBrandDeals: "",
   });
@@ -45,6 +44,13 @@ export function ContactSection() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showChannelConfirm, setShowChannelConfirm] = useState(false);
+
+  const urlExamples = [
+    "@mrbeast",
+    "UCX6OQ3DkcsbYNE6H8uQQuVA",
+    "https://youtube.com/@brand",
+  ];
 
   const handlePlatformSelect = (platform: string) => {
     setFormData({ ...formData, platform, channelUrl: "" });
@@ -90,13 +96,16 @@ export function ContactSection() {
         return;
       }
 
-      setChannelData({
+      const newChannelData = {
         title: channelInfo.title,
         avatar: channelInfo.avatar,
         subscribers: channelInfo.subscriberCount,
         isVerified: channelInfo.verified,
         verificationType: channelInfo.verificationType || null,
-      });
+      };
+      
+      setChannelData(newChannelData);
+      setShowChannelConfirm(true);
     } catch {
       setError("Failed to parse channel. Please try again.");
     } finally {
@@ -329,6 +338,29 @@ export function ContactSection() {
                   >
                     Supported formats: Full URL (https://youtube.com/@channel) or username (@channel or channel)
                   </motion.p>
+                  
+                  {/* URL Examples */}
+                  <motion.div 
+                    className="flex flex-wrap gap-2 mt-3"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
+                  >
+                    {urlExamples.map((example, index) => (
+                      <motion.button
+                        key={example}
+                        type="button"
+                        onClick={() => {
+                          setFormData({ ...formData, channelUrl: example });
+                        }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="px-3 py-1.5 text-xs sm:text-sm text-white/70 bg-card/50 border border-border rounded-lg hover:border-primary/50 hover:text-white transition-all"
+                      >
+                        {example}
+                      </motion.button>
+                    ))}
+                  </motion.div>
                   <AnimatePresence>
                     {error && (
                       <motion.p 
@@ -344,7 +376,7 @@ export function ContactSection() {
                   
                   {/* Channel Preview Card */}
                   <AnimatePresence>
-                    {channelData && (
+                    {channelData && !showChannelConfirm && (
                       <motion.div 
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -385,13 +417,99 @@ export function ContactSection() {
                       </motion.div>
                     )}
                   </AnimatePresence>
+                  
+                  {/* Channel Confirmation Modal */}
+                  <AnimatePresence>
+                    {showChannelConfirm && channelData && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                        onClick={() => setShowChannelConfirm(false)}
+                      >
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.9 }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="bg-card border border-border rounded-2xl p-6 sm:p-8 max-w-md w-full"
+                        >
+                          <div className="flex items-center gap-3 mb-6">
+                            <div className="w-8 h-8 rounded bg-primary/20 flex items-center justify-center">
+                              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                              </svg>
+                            </div>
+                            <h3 className="text-xl font-bold text-white">Is this your channel?</h3>
+                          </div>
+                          
+                          <div className="bg-card/50 rounded-xl p-4 mb-6">
+                            <div className="flex items-center gap-4">
+                              <Image
+                                src={channelData.avatar || "/placeholder.svg"}
+                                alt={channelData.title}
+                                width={64}
+                                height={64}
+                                className="rounded-full"
+                              />
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <h4 className="font-semibold text-white">
+                                    {channelData.title}
+                                  </h4>
+                                  {channelData.isVerified && (
+                                    <>
+                                      {(channelData.verificationType === 'music' || channelData.verificationType === 'artist') ? (
+                                        <svg className="w-4 h-4 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                                        </svg>
+                                      ) : (
+                                        <CheckCircle className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                                      )}
+                                    </>
+                                  )}
+                                </div>
+                                <p className="text-sm text-white/70 mt-1">
+                                  YouTube Channel • {channelData.subscribers} subscribers
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex gap-3">
+                            <motion.button
+                              onClick={() => setShowChannelConfirm(false)}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl transition-all"
+                            >
+                              Yes, that's me
+                            </motion.button>
+                            <motion.button
+                              onClick={() => {
+                                setShowChannelConfirm(false);
+                                setChannelData(null);
+                                setFormData({ ...formData, channelUrl: "" });
+                              }}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              className="flex-1 px-6 py-3 bg-card/50 border border-border text-white/70 hover:text-white hover:border-primary/50 font-semibold rounded-xl transition-all"
+                            >
+                              No, go back
+                            </motion.button>
+                          </div>
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
 
           {/* Personal Information */}
-          {(formData.platform === "youtube" && channelData) && (
+          {(formData.platform === "youtube" && channelData && !showChannelConfirm) && (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
@@ -432,25 +550,6 @@ export function ContactSection() {
                     required
                   />
                 </div>
-              </div>
-              <div>
-                <label
-                  htmlFor="phone"
-                  className="block text-sm font-medium text-white mb-2"
-                >
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  id="phone"
-                  value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-input border border-border rounded-xl text-white placeholder:text-white/40 focus:border-primary focus:bg-input/80 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-                  placeholder="+1 (555) 000-0000"
-                  required
-                />
               </div>
 
               {/* Additional Questions */}

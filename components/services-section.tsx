@@ -95,7 +95,7 @@ export function ServicesSection() {
             </motion.div>
           </motion.div>
 
-          {/* Right Column - Stats */}
+          {/* Right Column - Visual Placeholder */}
           <motion.div 
             className="flex-1 w-full"
             initial={{ opacity: 0, x: 50 }}
@@ -103,51 +103,13 @@ export function ServicesSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="grid grid-cols-2 gap-6 max-w-md mx-auto lg:mx-0">
-              <motion.div
-                className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border"
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.2 }}
-                whileHover={{ scale: 1.05, borderColor: "rgba(168, 85, 247, 0.5)" }}
-              >
-                <div className="text-3xl font-bold text-white mb-2">500+</div>
-                <div className="text-sm text-white/70">Brands Worked With</div>
-              </motion.div>
-              <motion.div
-                className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border"
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.3 }}
-                whileHover={{ scale: 1.05, borderColor: "rgba(168, 85, 247, 0.5)" }}
-              >
-                <div className="text-3xl font-bold text-white mb-2">13K+</div>
-                <div className="text-sm text-white/70">Active Creators</div>
-              </motion.div>
-              <motion.div
-                className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border"
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.4 }}
-                whileHover={{ scale: 1.05, borderColor: "rgba(168, 85, 247, 0.5)" }}
-              >
-                <div className="text-3xl font-bold text-white mb-2">$1B+</div>
-                <div className="text-sm text-white/70">Managed Spend</div>
-              </motion.div>
-              <motion.div
-                className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border"
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.5 }}
-                whileHover={{ scale: 1.05, borderColor: "rgba(168, 85, 247, 0.5)" }}
-              >
-                <div className="text-3xl font-bold text-white mb-2">27B+</div>
-                <div className="text-sm text-white/70">Combined Followers</div>
-              </motion.div>
+            <div className="relative aspect-[4/3] max-w-md mx-auto lg:mx-0">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 rounded-3xl border border-border/50 flex items-center justify-center">
+                <div className="text-center p-8">
+                  <div className="text-6xl mb-4">✨</div>
+                  <p className="text-white/60 text-sm">Full-service campaign management</p>
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>
