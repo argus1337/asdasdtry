@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X, ChevronDown } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 const navItems = [
   {
@@ -41,7 +42,20 @@ const navItems = [
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [scrolled, setScrolled] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const { scrollY } = useScroll();
+  
+  const navbarOpacity = useTransform(scrollY, [0, 100], [0.95, 1]);
+  const navbarBlur = useTransform(scrollY, [0, 100], [10, 20]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleMouseEnter = useCallback((label: string) => {
     if (timeoutRef.current) {
@@ -58,13 +72,26 @@ export function Navbar() {
   }, []);
 
   return (
-    <nav className="sticky top-0 z-50 glass-nav border-b border-border">
+    <motion.nav 
+      className={`sticky top-0 z-50 glass-nav border-b border-border transition-all ${
+        scrolled ? "shadow-lg" : ""
+      }`}
+      style={{
+        opacity: navbarOpacity,
+        backdropFilter: `blur(${navbarBlur}px)`,
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
-            <span className="text-2xl font-bold gradient-text">CreateSync</span>
-          </Link>
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Link href="/" className="flex items-center">
+              <span className="text-2xl font-bold gradient-text">CreateSync</span>
+            </Link>
+          </motion.div>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-1">
@@ -84,8 +111,20 @@ export function Navbar() {
                   )}
                 </button>
                 {openDropdown === item.label && (
-                  <div className="absolute top-full left-0 mt-2 w-48 bg-[#141c2f] border border-white/10 rounded-2xl shadow-2xl overflow-hidden py-2">
-                    {item.dropdown.map((subItem: any) => (
+                  <motion.div 
+                    className="absolute top-full left-0 mt-2 w-48 bg-[#141c2f] border border-white/10 rounded-2xl shadow-2xl overflow-hidden py-2"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {item.dropdown.map((subItem: any, index: number) => (
+                      <motion.div
+                        key={subItem.label}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                      >
                       subItem.disabled ? (
                         <div
                           key={subItem.label}
@@ -110,12 +149,14 @@ export function Navbar() {
                 )}
               </div>
             ))}
-            <Link
-              href="/contact"
-              className="ml-4 px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl transition-all whitespace-nowrap"
-            >
-              Collaborations
-            </Link>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link
+                href="/contact"
+                className="ml-4 px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl transition-all whitespace-nowrap"
+              >
+                Collaborations
+              </Link>
+            </motion.div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -147,30 +188,39 @@ export function Navbar() {
                   />
                 </button>
                 {openDropdown === item.label && (
-                  <div className="pl-6 mt-2 space-y-1">
-                    {item.dropdown.map((subItem: any) => (
-                      subItem.disabled ? (
-                        <div
-                          key={subItem.label}
-                          className="block px-4 py-2 text-sm text-white/40 cursor-not-allowed"
-                        >
-                          {subItem.label}
-                          {subItem.comingSoon && (
-                            <span className="ml-2 text-xs text-purple-400">(Coming Soon)</span>
-                          )}
-                        </div>
-                      ) : (
-                        <Link
-                          key={subItem.label}
-                          href={subItem.href}
-                          className="block px-4 py-2 text-sm text-white/60 hover:text-white transition-colors"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          {subItem.label}
-                        </Link>
-                      )
+                  <motion.div 
+                    className="pl-6 mt-2 space-y-1"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {item.dropdown.map((subItem: any, index: number) => (
+                      <motion.div
+                        key={subItem.label}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                      >
+                        {subItem.disabled ? (
+                          <div className="block px-4 py-2 text-sm text-white/40 cursor-not-allowed">
+                            {subItem.label}
+                            {subItem.comingSoon && (
+                              <span className="ml-2 text-xs text-purple-400">(Coming Soon)</span>
+                            )}
+                          </div>
+                        ) : (
+                          <Link
+                            href={subItem.href}
+                            className="block px-4 py-2 text-sm text-white/60 hover:text-white transition-colors"
+                            onClick={() => setIsOpen(false)}
+                          >
+                            {subItem.label}
+                          </Link>
+                        )}
+                      </motion.div>
                     ))}
-                  </div>
+                  </motion.div>
                 )}
               </div>
             ))}

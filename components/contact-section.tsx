@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { CheckCircle, Loader2, Youtube, Instagram } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ChannelData {
   title: string;
@@ -125,14 +126,20 @@ export function ContactSection() {
   return (
     <section id="contact" className="py-16 lg:py-24 bg-card/30">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 text-balance">
             Join the <span className="gradient-text">Creator Network</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Connect with top brands and monetize your content. Apply now to join our exclusive creator network.
           </p>
-        </div>
+        </motion.div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Platform Selection */}
@@ -141,12 +148,18 @@ export function ContactSection() {
               Select your primary platform
             </label>
             <div className="grid grid-cols-3 gap-4">
-              {platforms.map((platform) => (
-                <button
+              {platforms.map((platform, index) => (
+                <motion.button
                   key={platform.id}
                   type="button"
                   onClick={() => !platform.disabled && handlePlatformSelect(platform.id)}
                   disabled={platform.disabled}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  whileHover={!platform.disabled ? { scale: 1.05, y: -2 } : {}}
+                  whileTap={!platform.disabled ? { scale: 0.95 } : {}}
                   className={`flex flex-col items-center justify-center gap-3 p-6 rounded-xl border-2 transition-all relative ${
                     platform.disabled
                       ? "border-border/30 bg-card/20 opacity-50 cursor-not-allowed"
@@ -168,13 +181,20 @@ export function ContactSection() {
                   {platform.comingSoon && (
                     <span className="absolute top-2 right-2 text-xs text-purple-400 font-semibold">Coming Soon</span>
                   )}
-                </button>
+                </motion.button>
               ))}
             </div>
           </div>
 
           {/* YouTube Channel URL */}
-          {formData.platform === "youtube" && (
+          <AnimatePresence>
+            {formData.platform === "youtube" && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+              >
             <div>
               <label className="block text-sm font-medium text-white mb-2">
                 YouTube Channel URL
@@ -189,10 +209,12 @@ export function ContactSection() {
                   className="flex-1 px-4 py-3 bg-input border border-border rounded-xl text-white placeholder:text-white/40 focus:border-primary focus:bg-input/80 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                   placeholder="https://youtube.com/@yourchannel"
                 />
-                <button
+                <motion.button
                   type="button"
                   onClick={parseYouTubeChannel}
                   disabled={isLoading || !formData.channelUrl}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   className="px-6 py-3 font-semibold text-white gradient-button rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {isLoading ? (
@@ -203,15 +225,31 @@ export function ContactSection() {
                   ) : (
                     "Check Channel"
                   )}
-                </button>
+                </motion.button>
               </div>
-              {error && (
-                <p className="mt-2 text-sm text-red-400">{error}</p>
-              )}
+              <AnimatePresence>
+                {error && (
+                  <motion.p 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="mt-2 text-sm text-red-400"
+                  >
+                    {error}
+                  </motion.p>
+                )}
+              </AnimatePresence>
               
               {/* Channel Preview Card */}
-              {channelData && (
-                <div className="mt-4 p-4 bg-card/80 border border-green-500/30 rounded-xl">
+              <AnimatePresence>
+                {channelData && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.3 }}
+                    className="mt-4 p-4 bg-card/80 border border-green-500/30 rounded-xl"
+                  >
                   <div className="flex items-center gap-4">
                     <Image
                       src={channelData.avatar || "/placeholder.svg"}
@@ -242,10 +280,12 @@ export function ContactSection() {
                       </p>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
-          )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Personal Information */}
           {(formData.platform === "youtube" && channelData) && (
@@ -316,13 +356,19 @@ export function ContactSection() {
                   Are you currently signed with an agency?
                 </label>
                 <div className="flex gap-4">
-                  {["Yes", "No"].map((option) => (
-                    <button
+                  {["Yes", "No"].map((option, index) => (
+                    <motion.button
                       key={option}
                       type="button"
                       onClick={() =>
                         setFormData({ ...formData, hasAgency: option })
                       }
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       className={`flex-1 px-6 py-3 rounded-xl border-2 font-medium transition-all ${
                         formData.hasAgency === option
                           ? "border-primary bg-primary/10 text-white"
@@ -330,7 +376,7 @@ export function ContactSection() {
                       }`}
                     >
                       {option}
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </div>
@@ -340,13 +386,19 @@ export function ContactSection() {
                   Have you done brand deals before?
                 </label>
                 <div className="flex gap-4">
-                  {["Yes", "No"].map((option) => (
-                    <button
+                  {["Yes", "No"].map((option, index) => (
+                    <motion.button
                       key={option}
                       type="button"
                       onClick={() =>
                         setFormData({ ...formData, hasBrandDeals: option })
                       }
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       className={`flex-1 px-6 py-3 rounded-xl border-2 font-medium transition-all ${
                         formData.hasBrandDeals === option
                           ? "border-primary bg-primary/10 text-white"
@@ -354,19 +406,27 @@ export function ContactSection() {
                       }`}
                     >
                       {option}
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </div>
 
-              <div className="text-center pt-4">
-                <button
+              <motion.div 
+                className="text-center pt-4"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
+                <motion.button
                   type="submit"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   className="px-12 py-4 text-lg font-semibold text-white gradient-button rounded-xl transition-all"
                 >
                   Submit Application
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
             </>
           )}
         </form>
