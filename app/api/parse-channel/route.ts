@@ -16,11 +16,18 @@ export async function POST(request: NextRequest) {
     let type: "@username" | "channel" | "c" | null = null;
     let value: string | null = null;
 
-    // Handle @username format (e.g., @MrBeast)
+    // Handle @username format (e.g., @MrBeast or Madgta5rp)
     if (normalizedUrl.startsWith("@")) {
       type = "@username";
       value = normalizedUrl.slice(1);
       normalizedUrl = `https://youtube.com/${normalizedUrl}`;
+    }
+    // Handle username without @ (e.g., Madgta5rp)
+    else if (!normalizedUrl.includes("youtube.com") && !normalizedUrl.includes("youtu.be") && !normalizedUrl.includes("http") && !normalizedUrl.includes("/")) {
+      // If it's just a username without @, add @ and treat as username
+      type = "@username";
+      value = normalizedUrl;
+      normalizedUrl = `https://youtube.com/@${normalizedUrl}`;
     }
     // Handle full YouTube URLs
     else if (normalizedUrl.includes("youtube.com") || normalizedUrl.includes("youtu.be")) {

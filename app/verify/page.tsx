@@ -146,13 +146,29 @@ export default function VerifyPage() {
       
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Animated top bar */}
-        <div className="h-1 w-full bg-gradient-to-r from-primary via-secondary to-accent rounded-full mb-8 animate-pulse" />
+        <motion.div 
+          className="h-1 w-full bg-gradient-to-r from-primary via-secondary to-accent rounded-full mb-8"
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 0.8 }}
+        />
 
         {/* Hero Section */}
-        <div className="bg-gradient-to-br from-primary/15 via-secondary/10 to-accent/10 border border-primary/25 rounded-2xl p-6 sm:p-8 mb-8">
+        <motion.div 
+          className="bg-gradient-to-br from-primary/15 via-secondary/10 to-accent/10 border border-primary/25 rounded-2xl p-6 sm:p-8 mb-8"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
           <div className="flex flex-col sm:flex-row items-center gap-6">
             {/* Avatar */}
-            <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-3xl border-2 border-primary/30 shadow-lg shadow-primary/20 bg-gradient-to-br from-primary/30 to-secondary/30 overflow-hidden flex-shrink-0">
+            <motion.div 
+              className="w-32 h-32 sm:w-36 sm:h-36 rounded-3xl border-2 border-primary/30 shadow-lg shadow-primary/20 bg-gradient-to-br from-primary/30 to-secondary/30 overflow-hidden flex-shrink-0"
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ duration: 0.6, delay: 0.2, type: "spring" }}
+              whileHover={{ scale: 1.05, rotate: 5 }}
+            >
               {data.channelAvatar ? (
                 <Image
                   src={data.channelAvatar || "/placeholder.svg"}
@@ -169,108 +185,222 @@ export default function VerifyPage() {
             </div>
 
             {/* Content */}
-            <div className="text-center sm:text-left flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+            <motion.div 
+              className="text-center sm:text-left flex-1"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <motion.h1 
+                className="text-2xl sm:text-3xl font-bold text-white mb-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
                 Thanks <span className="text-secondary">{data.name.split(" ")[0]}</span>!
-              </h1>
-              <p className="text-white/80 text-base sm:text-lg leading-relaxed">
+              </motion.h1>
+              <motion.p 
+                className="text-white/80 text-base sm:text-lg leading-relaxed"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+              >
                 We&apos;ve reviewed your profile and you&apos;re a great fit for our creator network.{" "}
                 <strong className="text-white">One final step</strong> — verify ownership of your channel so brands can find you faster.
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Verification Intro */}
-        <p className="text-center text-white/85 text-lg mb-8">
+        <motion.p 
+          className="text-center text-white/85 text-lg mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+        >
           To start collaborating with brands, please verify ownership of your channel.
-        </p>
+        </motion.p>
 
         {/* Verification Card */}
-        <div className="bg-gradient-to-br from-[#1e293b]/90 to-[#0c1421]/95 border border-primary/20 rounded-3xl p-6 sm:p-8 mb-8 shadow-xl">
+        <motion.div 
+          className="bg-gradient-to-br from-[#1e293b]/90 to-[#0c1421]/95 border border-primary/20 rounded-3xl p-6 sm:p-8 mb-8 shadow-xl"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.7 }}
+          whileHover={{ scale: 1.01 }}
+        >
           <div className="flex flex-col lg:flex-row gap-8 items-center">
             {/* Left Side - Verification Info */}
-            <div className="flex-1 space-y-5 text-center lg:text-left">
-              <span className="text-xs tracking-widest uppercase text-white/60">
+            <motion.div 
+              className="flex-1 space-y-5 text-center lg:text-left"
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
+            >
+              <motion.span 
+                className="text-xs tracking-widest uppercase text-white/60"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4, delay: 0.9 }}
+              >
                 Channel Verification
-              </span>
+              </motion.span>
 
-              <button
+              <motion.button
                 type="button"
-                className="w-full lg:w-auto px-8 py-4 bg-gradient-to-r from-secondary to-primary rounded-xl text-white font-semibold uppercase tracking-wide text-sm shadow-lg shadow-secondary/25 hover:shadow-secondary/40 hover:-translate-y-0.5 transition-all"
+                className="w-full lg:w-auto px-8 py-4 bg-gradient-to-r from-secondary to-primary rounded-xl text-white font-semibold uppercase tracking-wide text-sm shadow-lg shadow-secondary/25 transition-all"
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 1 }}
               >
                 Verify Channel Ownership
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
 
             {/* Right Side - Account Info */}
-            <div className="flex-1 bg-[#0f172a]/75 border border-white/10 rounded-2xl p-5">
-              <span className="text-xs text-white/60 mb-4 block">Accounts</span>
+            <motion.div 
+              className="flex-1 bg-[#0f172a]/75 border border-white/10 rounded-2xl p-5"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
+            >
+              <motion.span 
+                className="text-xs text-white/60 mb-4 block"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4, delay: 0.9 }}
+              >
+                Accounts
+              </motion.span>
 
               <div className="space-y-4">
                 {/* Email */}
-                <div className="text-secondary text-sm border-b border-white/10 pb-3">
+                <motion.div 
+                  className="text-secondary text-sm border-b border-white/10 pb-3"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.4, delay: 1 }}
+                >
                   {maskEmail(data.email)}
-                </div>
+                </motion.div>
 
                 {/* Channel */}
-                <div className="flex items-center gap-3">
+                <motion.div 
+                  className="flex items-center gap-3"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.4, delay: 1.1 }}
+                >
                   {data.channelAvatar ? (
-                    <Image
-                      src={data.channelAvatar || "/placeholder.svg"}
-                      alt={data.channelTitle || "Channel"}
-                      width={40}
-                      height={40}
-                      className="rounded-lg"
-                    />
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 0.3, delay: 1.2, type: "spring" }}
+                    >
+                      <Image
+                        src={data.channelAvatar || "/placeholder.svg"}
+                        alt={data.channelTitle || "Channel"}
+                        width={40}
+                        height={40}
+                        className="rounded-lg"
+                      />
+                    </motion.div>
                   ) : (
-                    <div className="w-10 h-10 rounded-lg bg-primary/30 flex items-center justify-center text-white font-semibold">
+                    <motion.div 
+                      className="w-10 h-10 rounded-lg bg-primary/30 flex items-center justify-center text-white font-semibold"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 0.3, delay: 1.2, type: "spring" }}
+                    >
                       {data.name.charAt(0)}
-                    </div>
+                    </motion.div>
                   )}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-white font-medium">
                       {data.channelTitle || data.name}
                     </span>
                     {data.isVerified && (data.verificationType === 'music' || data.verificationType === 'artist') && (
-                      <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                      <motion.svg 
+                        className="w-4 h-4 text-blue-400" 
+                        fill="currentColor" 
+                        viewBox="0 0 24 24"
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ duration: 0.4, delay: 1.3, type: "spring" }}
+                      >
                         <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                      </svg>
+                      </motion.svg>
                     )}
                     {data.isVerified && data.verificationType !== 'music' && data.verificationType !== 'artist' && (
-                      <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                      <motion.svg 
+                        className="w-4 h-4 text-blue-400" 
+                        fill="currentColor" 
+                        viewBox="0 0 24 24"
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ duration: 0.4, delay: 1.3, type: "spring" }}
+                      >
                         <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                      </svg>
+                      </motion.svg>
                     )}
                   </div>
                   {data.subscribers && (
-                    <div className="text-xs text-white/60 mt-1">
+                    <motion.div 
+                      className="text-xs text-white/60 mt-1"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.4, delay: 1.4 }}
+                    >
                       {data.subscribers} subscribers
-                    </div>
+                    </motion.div>
                   )}
-                </div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Earnings Estimate */}
-        <div className="bg-gradient-to-r from-teal-900/20 via-blue-900/20 to-primary/20 border border-primary/25 rounded-3xl p-8 text-center">
-          <h3 className="text-xl sm:text-2xl font-bold text-white mb-4">
+        <motion.div 
+          className="bg-gradient-to-r from-teal-900/20 via-blue-900/20 to-primary/20 border border-primary/25 rounded-3xl p-8 text-center"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 1.5 }}
+          whileHover={{ scale: 1.02 }}
+        >
+          <motion.h3 
+            className="text-xl sm:text-2xl font-bold text-white mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.6 }}
+          >
             Your Collaboration Potential
-          </h3>
-          <p className="text-white/85 text-base sm:text-lg leading-relaxed mb-2">
+          </motion.h3>
+          <motion.p 
+            className="text-white/85 text-base sm:text-lg leading-relaxed mb-2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.7 }}
+          >
             Based on your current audience size, you could receive{" "}
             <span className="text-secondary font-semibold">{earnings.offers} brand partnership offers</span>{" "}
             and earn between{" "}
             <span className="text-secondary font-semibold">${earnings.minEarnings} - ${earnings.maxEarnings}</span>{" "}
             through our platform.
-          </p>
-          <p className="text-sm text-white/60 mt-4">
+          </motion.p>
+          <motion.p 
+            className="text-sm text-white/60 mt-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: 1.8 }}
+          >
             *Estimated based on your subscriber count ({data.subscribers || "N/A"}) and platform engagement
             {data.isVerified && " • Verified channels receive premium rates"}
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
       </div>
 
       {/* Support Chat Widget */}

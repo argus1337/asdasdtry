@@ -1,9 +1,12 @@
+"use client";
+
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function CreatorsPage() {
   return (
@@ -12,26 +15,69 @@ export default function CreatorsPage() {
       
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-pink-900/20 blur-3xl" />
+        <motion.div 
+          className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-pink-900/20 blur-3xl"
+          animate={{
+            backgroundPosition: ["0% 0%", "100% 100%"],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            repeatType: "reverse",
+          }}
+        />
         <div className="container relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-4">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <motion.div 
+                className="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-4"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
                 CREATORS
-              </div>
-              <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+              </motion.div>
+              <motion.h1 
+                className="text-5xl md:text-6xl font-bold text-white mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
                 Join the premiere creator network.
-              </h1>
-              <p className="text-lg text-white/80 mb-8">
+              </motion.h1>
+              <motion.p 
+                className="text-lg text-white/80 mb-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
                 Partner with CreateSync and get the best brand deals on the market.
-              </p>
-              <Link href="/contact">
-                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg">
-                  Let's talk
-                </Button>
-              </Link>
-            </div>
-            <div className="relative">
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link href="/contact">
+                  <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg">
+                    Let's talk
+                  </Button>
+                </Link>
+              </motion.div>
+            </motion.div>
+            <motion.div 
+              className="relative"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              whileHover={{ scale: 1.02 }}
+            >
               <Image
                 src="/images/656e15f62d0649eeebdd2a88_art.png"
                 alt="Creators"
@@ -39,7 +85,7 @@ export default function CreatorsPage() {
                 height={400}
                 className="w-full h-auto rounded-2xl"
               />
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -48,24 +94,26 @@ export default function CreatorsPage() {
       <section className="py-12">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-60">
-            <div className="flex items-center justify-center h-12 px-4">
-              <Image src="/images/62833b96aef969eb76b8faf7_Disney_wordmark_1.svg" alt="Disney" width={120} height={48} className="h-8 w-auto object-contain" />
-            </div>
-            <div className="flex items-center justify-center h-12 px-4">
-              <Image src="/images/62833b9627cc9965e37886e9_Amazon_logo_1.svg" alt="Amazon" width={120} height={48} className="h-8 w-auto object-contain" />
-            </div>
-            <div className="flex items-center justify-center h-12 px-4">
-              <Image src="/images/6658a24915de1e79bf4cac2a_gnc.png" alt="GNC" width={120} height={48} className="h-8 w-auto object-contain" />
-            </div>
-            <div className="flex items-center justify-center h-12 px-4">
-              <Image src="/images/6418996a19486aace8d5e835_lyft-logo_1.svg" alt="Lyft" width={120} height={48} className="h-8 w-auto object-contain" />
-            </div>
-            <div className="flex items-center justify-center h-12 px-4">
-              <Image src="/images/6658a289fff29b1650697847_crocs.png" alt="Crocs" width={120} height={48} className="h-8 w-auto object-contain" />
-            </div>
-            <div className="flex items-center justify-center h-12 px-4">
-              <Image src="/images/6658a0ed71d87a6d8bc6e551_bluechew.png" alt="BlueChew" width={120} height={48} className="h-8 w-auto object-contain" />
-            </div>
+            {[
+              { src: "/images/62833b96aef969eb76b8faf7_Disney_wordmark_1.svg", alt: "Disney" },
+              { src: "/images/62833b9627cc9965e37886e9_Amazon_logo_1.svg", alt: "Amazon" },
+              { src: "/images/6658a24915de1e79bf4cac2a_gnc.png", alt: "GNC" },
+              { src: "/images/6418996a19486aace8d5e835_lyft-logo_1.svg", alt: "Lyft" },
+              { src: "/images/6658a289fff29b1650697847_crocs.png", alt: "Crocs" },
+              { src: "/images/6658a0ed71d87a6d8bc6e551_bluechew.png", alt: "BlueChew" },
+            ].map((client, index) => (
+              <motion.div
+                key={client.alt}
+                className="flex items-center justify-center h-12 px-4"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 0.6, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                whileHover={{ opacity: 1, scale: 1.1 }}
+              >
+                <Image src={client.src} alt={client.alt} width={120} height={48} className="h-8 w-auto object-contain" />
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -74,37 +122,49 @@ export default function CreatorsPage() {
       <section className="py-20">
         <div className="container max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div>
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
               <h2 className="text-4xl font-bold text-white mb-8">
                 CreateSync knows creators.
               </h2>
-            </div>
-            <div className="space-y-6">
-              <div className="flex gap-4">
-                <Check className="w-6 h-6 text-pink-400 flex-shrink-0 mt-1" />
-                <p className="text-white/80">
-                  We typically work with creators who have 50K+ followers on all social media.
-                </p>
-              </div>
-              <div className="flex gap-4">
-                <Check className="w-6 h-6 text-pink-400 flex-shrink-0 mt-1" />
-                <p className="text-white/80">
-                  CreateSync knows what's important to you: money, transparency, creative control, non-exclusivity, accessibility, and personalization.
-                </p>
-              </div>
-              <div className="flex gap-4">
-                <Check className="w-6 h-6 text-pink-400 flex-shrink-0 mt-1" />
-                <p className="text-white/80">
-                  Our mission is to help you land brand deals that match your authentic voice while making you lots and lots of money.
-                </p>
-              </div>
-              <div className="flex gap-4">
-                <Check className="w-6 h-6 text-pink-400 flex-shrink-0 mt-1" />
-                <p className="text-white/80">
-                  Our expert team has controlled over $1B in marketing spend throughout our careers - we know what works for you and for brands.
-                </p>
-              </div>
-            </div>
+            </motion.div>
+            <motion.div 
+              className="space-y-6"
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              {[
+                "We typically work with creators who have 50K+ followers on all social media.",
+                "CreateSync knows what's important to you: money, transparency, creative control, non-exclusivity, accessibility, and personalization.",
+                "Our mission is to help you land brand deals that match your authentic voice while making you lots and lots of money.",
+                "Our expert team has controlled over $1B in marketing spend throughout our careers - we know what works for you and for brands.",
+              ].map((text, index) => (
+                <motion.div
+                  key={index}
+                  className="flex gap-4"
+                  initial={{ opacity: 0, x: 30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                >
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    whileInView={{ scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.3, delay: index * 0.1 + 0.1, type: "spring" }}
+                  >
+                    <Check className="w-6 h-6 text-pink-400 flex-shrink-0 mt-1" />
+                  </motion.div>
+                  <p className="text-white/80">{text}</p>
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         </div>
       </section>

@@ -1,9 +1,12 @@
+"use client";
+
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function YouTubePage() {
   return (
@@ -12,29 +15,77 @@ export default function YouTubePage() {
       
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-pink-900/20 blur-3xl" />
+        <motion.div 
+          className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-pink-900/20 blur-3xl"
+          animate={{
+            backgroundPosition: ["0% 0%", "100% 100%"],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            repeatType: "reverse",
+          }}
+        />
         <div className="container relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-4">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <motion.div 
+                className="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-4"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
                 YOUTUBE INFLUENCER MARKETING
-              </div>
-              <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+              </motion.div>
+              <motion.h1 
+                className="text-5xl md:text-6xl font-bold text-white mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
                 Unlike any Youtube Influencer Marketing agency.
-              </h1>
-              <p className="text-lg text-white/80 mb-8">
+              </motion.h1>
+              <motion.p 
+                className="text-lg text-white/80 mb-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
                 Every day people are looking to YouTube influencer content that <span className="text-pink-400">solves problems</span> and <span className="text-pink-400">entertains the hell</span> out of them.
-              </p>
-              <p className="text-lg text-white/80 mb-8">
+              </motion.p>
+              <motion.p 
+                className="text-lg text-white/80 mb-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
                 Our 2,000+ creator network loves to do just that! We've deployed over 8 figures in spending to a network of 4 billion followers and taken brands from off the map to leading the charge on YouTube.
-              </p>
-              <Link href="/contact">
-                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg">
-                  Collaborations
-                </Button>
-              </Link>
-            </div>
-            <div className="relative">
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link href="/contact">
+                  <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg">
+                    Collaborations
+                  </Button>
+                </Link>
+              </motion.div>
+            </motion.div>
+            <motion.div 
+              className="relative"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              whileHover={{ scale: 1.02 }}
+            >
               <Image
                 src="/images/60df18585b4eb434631eff2f_Group_17.png"
                 alt="YouTube Marketing"
@@ -42,7 +93,7 @@ export default function YouTubePage() {
                 height={400}
                 className="w-full h-auto rounded-2xl"
               />
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>

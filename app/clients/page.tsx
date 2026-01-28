@@ -1,6 +1,9 @@
+"use client";
+
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 const clients = [
   { name: "Netflix", logo: "/images/64189ad736481a26d5793180_Netflix_2015_logo_1.svg" },
@@ -60,17 +63,48 @@ export default function ClientsPage() {
       
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-pink-900/20 blur-3xl" />
+        <motion.div 
+          className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-pink-900/20 blur-3xl"
+          animate={{
+            backgroundPosition: ["0% 0%", "100% 100%"],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            repeatType: "reverse",
+          }}
+        />
         <div className="container relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-4">
-            CLIENTS
-          </div>
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-            The best brands choose CreateSync.
-          </h1>
-          <p className="text-lg text-white/80 mb-8 max-w-3xl mx-auto">
-            High-growth startup? Check. Fortune 500? Check. We help brands of every size and industry drive sales with world-class influencer marketing campaigns.
-          </p>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <motion.div 
+              className="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-4"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              CLIENTS
+            </motion.div>
+            <motion.h1 
+              className="text-5xl md:text-6xl font-bold text-white mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              The best brands choose CreateSync.
+            </motion.h1>
+            <motion.p 
+              className="text-lg text-white/80 mb-8 max-w-3xl mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              High-growth startup? Check. Fortune 500? Check. We help brands of every size and industry drive sales with world-class influencer marketing campaigns.
+            </motion.p>
+          </motion.div>
         </div>
       </section>
 
@@ -79,9 +113,14 @@ export default function ClientsPage() {
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {clients.map((client, index) => (
-              <div
+              <motion.div
                 key={index}
                 className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                whileHover={{ scale: 1.1, rotate: [0, -2, 2, 0] }}
               >
                 <Image
                   src={client.logo}
@@ -90,7 +129,7 @@ export default function ClientsPage() {
                   height={80}
                   className="h-12 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity"
                 />
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

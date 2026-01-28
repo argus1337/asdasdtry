@@ -1,9 +1,12 @@
+"use client";
+
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function AboutPage() {
   return (
@@ -12,28 +15,80 @@ export default function AboutPage() {
       
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-pink-900/20 blur-3xl" />
+        <motion.div 
+          className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-pink-900/20 blur-3xl"
+          animate={{
+            backgroundPosition: ["0% 0%", "100% 100%"],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            repeatType: "reverse",
+          }}
+        />
         <div className="container relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-left">
-            <div className="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-4">
+          <motion.div 
+            className="text-left"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <motion.div 
+              className="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-4"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
               ABOUT US
-            </div>
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+            </motion.div>
+            <motion.h1 
+              className="text-5xl md:text-6xl font-bold text-white mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
               Hi. We're <span className="text-pink-400">CreateSync</span>. We are influencer marketing.
-            </h1>
-            <p className="text-lg text-white/80 mb-8 max-w-3xl">
+            </motion.h1>
+            <motion.p 
+              className="text-lg text-white/80 mb-8 max-w-3xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
               CreateSync has been in the influencer marketing game since 2021, but our team of social media professionals, marketing executives, developers, designers, and influencers have a collective multiple decades of experience.
-            </p>
+            </motion.p>
             <div className="h-px bg-gradient-to-r from-purple-500/50 via-pink-500/50 to-transparent my-12" />
             
-            <h4 className="text-xl font-semibold text-white mb-6 mt-16">
+            <motion.h4 
+              className="text-xl font-semibold text-white mb-6 mt-16"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
               If we look familiar, you might have seen us on:
-            </h4>
-            <div className="flex flex-wrap gap-8 items-center opacity-60 mb-12">
-              <div className="text-white/60 text-sm">G2</div>
-              <div className="text-white/60 text-sm">Clutch</div>
-              <div className="text-white/60 text-sm">DesignRush</div>
-            </div>
+            </motion.h4>
+            <motion.div 
+              className="flex flex-wrap gap-8 items-center opacity-60 mb-12"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 0.6 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
+              {["G2", "Clutch", "DesignRush"].map((item, index) => (
+                <motion.div
+                  key={item}
+                  className="text-white/60 text-sm"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, delay: 0.6 + index * 0.1 }}
+                  whileHover={{ scale: 1.1 }}
+                >
+                  {item}
+                </motion.div>
+              ))}
+            </motion.div>
             <div className="h-px bg-gradient-to-r from-purple-500/50 via-pink-500/50 to-transparent my-12" />
           </div>
         </div>
@@ -42,11 +97,29 @@ export default function AboutPage() {
       {/* Main Content */}
       <section className="py-20">
         <div className="container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-left">
-            <h2 className="text-4xl font-bold text-white mb-6 mt-16">
+          <motion.div 
+            className="text-left"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <motion.h2 
+              className="text-4xl font-bold text-white mb-6 mt-16"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
               This is the new frontier of marketing.
-            </h2>
-            <div className="prose prose-invert max-w-none text-white/80 space-y-6">
+            </motion.h2>
+            <motion.div 
+              className="prose prose-invert max-w-none text-white/80 space-y-6"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
               <p>
                 On platforms like <Link href="/services/tiktok" className="text-pink-400 hover:text-pink-300">TikTok</Link>, <Link href="/services/instagram" className="text-pink-400 hover:text-pink-300">Instagram</Link>, and <Link href="/services/youtube" className="text-pink-400 hover:text-pink-300">YouTube</Link>, a new generation of creators are enhancing brand awareness, perception, and adoption of products and services.
               </p>
@@ -62,11 +135,17 @@ export default function AboutPage() {
               <p>
                 Our mission is to change the world of influencer marketing for the better, one campaign at a time.
               </p>
-              <p className="text-xl font-semibold text-pink-400">
+              <motion.p 
+                className="text-xl font-semibold text-pink-400"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
                 We are CreateSync.
-              </p>
-            </div>
-          </div>
+              </motion.p>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 

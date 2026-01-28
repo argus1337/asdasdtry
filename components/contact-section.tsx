@@ -207,7 +207,7 @@ export function ContactSection() {
                         setFormData({ ...formData, channelUrl: e.target.value })
                       }
                       className="flex-1 px-4 py-3 bg-input border border-border rounded-xl text-white placeholder:text-white/40 focus:border-primary focus:bg-input/80 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-                      placeholder="https://youtube.com/@yourchannel"
+                      placeholder="https://youtube.com/@yourchannel or @yourchannel"
                     />
                     <motion.button
                       type="button"
