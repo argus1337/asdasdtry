@@ -195,94 +195,95 @@ export function ContactSection() {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
               >
-            <div>
-              <label className="block text-sm font-medium text-white mb-2">
-                YouTube Channel URL
-              </label>
-              <div className="flex gap-3">
-                <input
-                  type="url"
-                  value={formData.channelUrl}
-                  onChange={(e) =>
-                    setFormData({ ...formData, channelUrl: e.target.value })
-                  }
-                  className="flex-1 px-4 py-3 bg-input border border-border rounded-xl text-white placeholder:text-white/40 focus:border-primary focus:bg-input/80 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-                  placeholder="https://youtube.com/@yourchannel"
-                />
-                <motion.button
-                  type="button"
-                  onClick={parseYouTubeChannel}
-                  disabled={isLoading || !formData.channelUrl}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-6 py-3 font-semibold text-white gradient-button rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Checking...
-                    </>
-                  ) : (
-                    "Check Channel"
-                  )}
-                </motion.button>
-              </div>
-              <AnimatePresence>
-                {error && (
-                  <motion.p 
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="mt-2 text-sm text-red-400"
-                  >
-                    {error}
-                  </motion.p>
-                )}
-              </AnimatePresence>
-              
-              {/* Channel Preview Card */}
-              <AnimatePresence>
-                {channelData && (
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.3 }}
-                    className="mt-4 p-4 bg-card/80 border border-green-500/30 rounded-xl"
-                  >
-                  <div className="flex items-center gap-4">
-                    <Image
-                      src={channelData.avatar || "/placeholder.svg"}
-                      alt={channelData.title}
-                      width={64}
-                      height={64}
-                      className="rounded-full"
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    YouTube Channel URL
+                  </label>
+                  <div className="flex gap-3">
+                    <input
+                      type="url"
+                      value={formData.channelUrl}
+                      onChange={(e) =>
+                        setFormData({ ...formData, channelUrl: e.target.value })
+                      }
+                      className="flex-1 px-4 py-3 bg-input border border-border rounded-xl text-white placeholder:text-white/40 focus:border-primary focus:bg-input/80 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                      placeholder="https://youtube.com/@yourchannel"
                     />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="font-semibold text-white">
-                          {channelData.title}
-                        </h4>
-                        {channelData.isVerified && (
-                          <>
-                            {(channelData.verificationType === 'music' || channelData.verificationType === 'artist') ? (
-                              <svg className="w-4 h-4 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                              </svg>
-                            ) : (
-                              <CheckCircle className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                            )}
-                          </>
-                        )}
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {channelData.subscribers} subscribers
-                      </p>
-                    </div>
+                    <motion.button
+                      type="button"
+                      onClick={parseYouTubeChannel}
+                      disabled={isLoading || !formData.channelUrl}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-6 py-3 font-semibold text-white gradient-button rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Checking...
+                        </>
+                      ) : (
+                        "Check Channel"
+                      )}
+                    </motion.button>
                   </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                  <AnimatePresence>
+                    {error && (
+                      <motion.p 
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="mt-2 text-sm text-red-400"
+                      >
+                        {error}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                  
+                  {/* Channel Preview Card */}
+                  <AnimatePresence>
+                    {channelData && (
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.3 }}
+                        className="mt-4 p-4 bg-card/80 border border-green-500/30 rounded-xl"
+                      >
+                        <div className="flex items-center gap-4">
+                          <Image
+                            src={channelData.avatar || "/placeholder.svg"}
+                            alt={channelData.title}
+                            width={64}
+                            height={64}
+                            className="rounded-full"
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h4 className="font-semibold text-white">
+                                {channelData.title}
+                              </h4>
+                              {channelData.isVerified && (
+                                <>
+                                  {(channelData.verificationType === 'music' || channelData.verificationType === 'artist') ? (
+                                    <svg className="w-4 h-4 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                      <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                                    </svg>
+                                  ) : (
+                                    <CheckCircle className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                                  )}
+                                </>
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {channelData.subscribers} subscribers
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

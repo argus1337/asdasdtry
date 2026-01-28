@@ -125,27 +125,24 @@ export function Navbar() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05 }}
                       >
-                      subItem.disabled ? (
-                        <div
-                          key={subItem.label}
-                          className="block px-5 py-3 text-sm text-white/40 cursor-not-allowed relative"
-                        >
-                          {subItem.label}
-                          {subItem.comingSoon && (
-                            <span className="ml-2 text-xs text-purple-400">(Coming Soon)</span>
-                          )}
-                        </div>
-                      ) : (
-                        <Link
-                          key={subItem.label}
-                          href={subItem.href}
-                          className="block px-5 py-3 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors"
-                        >
-                          {subItem.label}
-                        </Link>
-                      )
+                        {subItem.disabled ? (
+                          <div className="block px-5 py-3 text-sm text-white/40 cursor-not-allowed relative">
+                            {subItem.label}
+                            {subItem.comingSoon && (
+                              <span className="ml-2 text-xs text-purple-400">(Coming Soon)</span>
+                            )}
+                          </div>
+                        ) : (
+                          <Link
+                            href={subItem.href}
+                            className="block px-5 py-3 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors"
+                          >
+                            {subItem.label}
+                          </Link>
+                        )}
+                      </motion.div>
                     ))}
-                  </div>
+                  </motion.div>
                 )}
               </div>
             ))}
@@ -236,6 +233,6 @@ export function Navbar() {
           </div>
         )}
       </div>
-    </nav>
+    </motion.nav>
   );
 }
