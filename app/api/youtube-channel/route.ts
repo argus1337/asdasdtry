@@ -508,7 +508,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response: any = {
+    const apiResponse: any = {
       success: true,
       title,
       avatar: avatar || "/placeholder-avatar.png",
@@ -518,7 +518,7 @@ export async function POST(request: NextRequest) {
     };
 
     if (debugMode) {
-      response.debug = {
+      apiResponse.debug = {
         ...debugInfo,
         finalTitle: title,
         finalSubscriberCount: subscriberCount,
@@ -527,7 +527,7 @@ export async function POST(request: NextRequest) {
       };
     }
 
-    return NextResponse.json(response);
+    return NextResponse.json(apiResponse);
   } catch (error) {
     console.error("Error fetching YouTube channel:", error);
     return NextResponse.json(
