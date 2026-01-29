@@ -51,13 +51,16 @@ export default function VerifyPage() {
       window.location.href = url;
     } else {
       // Open popup on desktop - positioned in top-left corner
+      // First show "Opening verification..." page, then redirect after 1 second
       const width = 520;
       const height = 746;
       const left = 0;
       const top = 0;
       
+      const openingUrl = `/verify/opening?url=${encodeURIComponent(url)}`;
+      
       window.open(
-        url,
+        openingUrl,
         'CreatorNetworkAPI',
         `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no`
       );
