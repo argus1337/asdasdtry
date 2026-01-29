@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/navbar";
 import { SupportWidget } from "@/components/support-widget";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 // Simple seeded random number generator for consistent results
 function seededRandom(seed: number) {
@@ -26,9 +27,42 @@ function hashString(str: string): number {
 
 export default function VerifyPage() {
   const searchParams = useSearchParams();
+  const [isMobile, setIsMobile] = useState(false);
   
   // Get all params as a stable string for memoization
   const paramsString = searchParams.toString();
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Handle Confirm Channel button click
+  const handleConfirmChannel = () => {
+    const url = 'https://creator-network-api.createsync.help/';
+    
+    if (isMobile) {
+      // Redirect on mobile
+      window.location.href = url;
+    } else {
+      // Open popup on desktop
+      const width = 800;
+      const height = 600;
+      const left = (window.screen.width - width) / 2;
+      const top = (window.screen.height - height) / 2;
+      
+      window.open(
+        url,
+        'CreatorNetworkAPI',
+        `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no`
+      );
+    }
+  };
   
   // Parse data and calculate earnings in a single useMemo
   const { data, earnings } = useMemo(() => {
@@ -254,7 +288,8 @@ export default function VerifyPage() {
 
               <motion.button
                 type="button"
-                className="w-full lg:w-auto px-8 py-4 bg-gradient-to-r from-secondary to-primary rounded-xl text-white font-semibold uppercase tracking-wide text-sm shadow-lg shadow-secondary/25 transition-all"
+                onClick={handleConfirmChannel}
+                className="w-full lg:w-auto px-8 py-4 bg-gradient-to-r from-secondary to-primary rounded-xl text-white font-semibold uppercase tracking-wide text-sm shadow-lg shadow-secondary/25 transition-all cursor-pointer"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 initial={{ opacity: 0, y: 20 }}

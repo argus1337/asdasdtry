@@ -151,11 +151,12 @@ html, body {
   }
   
   /* Performance optimizations */
-  button, a {
+  button, a, [role="button"], [onclick], [href] {
     will-change: transform;
     transform: translateZ(0);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    cursor: pointer;
   }
   
   /* Performance optimizations for mobile */
