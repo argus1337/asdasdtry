@@ -19,18 +19,16 @@ function OpeningContent() {
     <div style={{
       width: "100%",
       height: "100vh",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
       backgroundColor: "#ffffff",
       fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
       fontSize: "16px",
       color: "#333333",
       margin: 0,
-      padding: 0
+      padding: "20px",
+      boxSizing: "border-box"
     }}>
       <div style={{
-        textAlign: "center"
+        textAlign: "left"
       }}>
         Opening verification...
       </div>
@@ -44,15 +42,16 @@ export default function OpeningPage() {
       <div style={{
         width: "100%",
         height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
         backgroundColor: "#ffffff",
         fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
         fontSize: "16px",
-        color: "#333333"
+        color: "#333333",
+        padding: "20px",
+        boxSizing: "border-box"
       }}>
-        Opening verification...
+        <div style={{ textAlign: "left" }}>
+          Opening verification...
+        </div>
       </div>
     }>
       <OpeningContent />

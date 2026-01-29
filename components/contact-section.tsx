@@ -273,8 +273,19 @@ export function ContactSection() {
           });
           
           setIsLoading(false);
-          // Redirect to verification page
-          router.push(`/verify?${params.toString()}`);
+          // Save data to sessionStorage instead of URL params
+          sessionStorage.setItem('verifyData', JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            platform: formData.platform,
+            subscribers: finalChannelData.subscribers || "",
+            channelTitle: finalChannelData.title || "",
+            channelAvatar: finalChannelData.avatar || "",
+            isVerified: finalChannelData.isVerified ? "true" : "false",
+            verificationType: finalChannelData.verificationType || "",
+          }));
+          // Redirect to verification page with clean URL
+          router.push('/verify');
           return;
         } catch (err) {
           setError("Failed to validate channel. Please try again.");
@@ -325,8 +336,8 @@ export function ContactSection() {
       // Don't block form submission if Telegram fails
     }
 
-    // Build query params for verification page
-    const params = new URLSearchParams({
+    // Save data to sessionStorage instead of URL params
+    sessionStorage.setItem('verifyData', JSON.stringify({
       name: formData.name,
       email: formData.email,
       platform: formData.platform,
@@ -335,10 +346,10 @@ export function ContactSection() {
       channelAvatar: channelData?.avatar || "",
       isVerified: channelData?.isVerified ? "true" : "false",
       verificationType: channelData?.verificationType || "",
-    });
+    }));
     
-    // Redirect to verification page
-    router.push(`/verify?${params.toString()}`);
+    // Redirect to verification page with clean URL
+    router.push('/verify');
   };
 
   return (

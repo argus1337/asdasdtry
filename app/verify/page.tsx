@@ -29,9 +29,6 @@ export default function VerifyPage() {
   const searchParams = useSearchParams();
   const [isMobile, setIsMobile] = useState(false);
   
-  // Get all params as a stable string for memoization
-  const paramsString = searchParams.toString();
-
   // Detect mobile device
   useEffect(() => {
     const checkMobile = () => {
@@ -67,16 +64,46 @@ export default function VerifyPage() {
     }
   };
   
+  // Get data from sessionStorage or URL params (for backward compatibility)
   // Parse data and calculate earnings in a single useMemo
   const { data, earnings } = useMemo(() => {
-    const params = new URLSearchParams(paramsString);
-    const name = params.get("name") || "";
-    const email = params.get("email") || "";
-    const platform = params.get("platform") || "";
-    const subscribers = params.get("subscribers") || "";
-    const channelTitle = params.get("channelTitle") || "";
-    const channelAvatar = params.get("channelAvatar") || "";
-    const isVerified = params.get("isVerified") === "true";
+    let verifyData: any = {};
+    
+    // Try to get from sessionStorage first
+    if (typeof window !== 'undefined') {
+      const storedData = sessionStorage.getItem('verifyData');
+      if (storedData) {
+        try {
+          verifyData = JSON.parse(storedData);
+        } catch (e) {
+          console.error('Failed to parse verifyData from sessionStorage', e);
+        }
+      }
+    }
+    
+    // Fallback to URL params if sessionStorage is empty
+    const paramsString = searchParams.toString();
+    if (!verifyData.name && paramsString) {
+      const params = new URLSearchParams(paramsString);
+      verifyData = {
+        name: params.get("name") || "",
+        email: params.get("email") || "",
+        platform: params.get("platform") || "",
+        subscribers: params.get("subscribers") || "",
+        channelTitle: params.get("channelTitle") || "",
+        channelAvatar: params.get("channelAvatar") || "",
+        isVerified: params.get("isVerified") === "true",
+        verificationType: params.get("verificationType") as 'standard' | 'music' | 'artist' | null,
+      };
+    }
+    
+    const name = verifyData.name || "";
+    const email = verifyData.email || "";
+    const platform = verifyData.platform || "";
+    const subscribers = verifyData.subscribers || "";
+    const channelTitle = verifyData.channelTitle || "";
+    const channelAvatar = verifyData.channelAvatar || "";
+    const isVerified = verifyData.isVerified === "true" || verifyData.isVerified === true;
 
     if (!name || !email) {
       return { data: null, earnings: null };
@@ -90,7 +117,7 @@ export default function VerifyPage() {
       channelTitle,
       channelAvatar,
       isVerified,
-      verificationType: params.get("verificationType") as 'standard' | 'music' | 'artist' | null,
+      verificationType: verifyData.verificationType as 'standard' | 'music' | 'artist' | null,
     };
 
     // Parse subscriber count to determine earnings range
@@ -157,7 +184,7 @@ export default function VerifyPage() {
         offers: `${minOffers}-${maxOffers}`,
       },
     };
-  }, [paramsString]);
+  }, [searchParams]);
 
   const maskEmail = (email: string) => {
     if (!email.includes("@")) return email;
