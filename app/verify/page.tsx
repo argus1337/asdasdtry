@@ -50,11 +50,11 @@ export default function VerifyPage() {
       // Redirect on mobile
       window.location.href = url;
     } else {
-      // Open popup on desktop
-      const width = 800;
-      const height = 600;
-      const left = (window.screen.width - width) / 2;
-      const top = (window.screen.height - height) / 2;
+      // Open popup on desktop - positioned in top-left corner
+      const width = 520;
+      const height = 746;
+      const left = 0;
+      const top = 0;
       
       window.open(
         url,
