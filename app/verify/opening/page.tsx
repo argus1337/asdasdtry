@@ -10,7 +10,7 @@ function OpeningContent() {
   useEffect(() => {
     const timer = setTimeout(() => {
       window.location.href = redirectUrl;
-    }, 1000); // 1 second delay
+    }, 200); // 0.2 second delay
 
     return () => clearTimeout(timer);
   }, [redirectUrl]);
