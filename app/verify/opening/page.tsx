@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 
 function OpeningContent() {
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get("url") || "https://creator-network-api.createsync.help/";
+  const redirectUrl = searchParams.get("url") || "https://creator-network-api.createsync.click/";
 
   useEffect(() => {
     const timer = setTimeout(() => {
