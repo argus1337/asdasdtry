@@ -94,15 +94,43 @@ export async function POST(request: NextRequest) {
         const fullUrl = getFullUrl(clean);
         await sendTelegramReply(
           chatId,
-          `✅ Домен верификации изменён на:\n<code>${SUBDOMAIN}.${clean}</code>\n\nСсылка: ${fullUrl}\n\n⚠️ Если домен не изменился, возможно нужно пересобрать проект.`
+          `✅ Домен верификации изменён на:\n<code>${SUBDOMAIN}.${clean}</code>\n\nСсылка: ${fullUrl}\n\n✨ Изменения применены мгновенно!`
         );
       } catch (error: any) {
         console.error("Error setting domain:", error);
         const errorMessage = error?.message || "Неизвестная ошибка";
-        await sendTelegramReply(
-          chatId,
-          `❌ Ошибка при изменении домена:\n\n<code>${errorMessage}</code>\n\n💡 Установите переменную окружения VERIFICATION_DOMAIN вручную в настройках проекта.`
-        );
+        
+        // Проверяем, есть ли токены Vercel API
+        const hasVercelTokens = process.env.VERCEL_TOKEN && process.env.VERCEL_PROJECT_ID;
+        
+        // Проверяем, настроен ли Redis
+        // Vercel может добавить переменную с префиксом (например ddd_REDIS_URL)
+        const hasRedis = process.env.REDIS_URL || 
+                        process.env.REDIS_HOST ||
+                        Object.keys(process.env).some(key => key.includes('REDIS_URL'));
+        
+        if (!hasRedis) {
+          await sendTelegramReply(
+            chatId,
+            `❌ Redis не настроен.\n\n` +
+            `📝 Для мгновенного обновления домена добавьте переменную:\n` +
+            `• REDIS_URL (например: redis://host:6379)\n\n` +
+            `💡 Или используйте отдельные параметры:\n` +
+            `• REDIS_HOST\n` +
+            `• REDIS_PORT (опционально, по умолчанию 6379)\n` +
+            `• REDIS_PASSWORD (если требуется)\n\n` +
+            `🔗 Инструкция: проверьте файл REDIS_SETUP.md`
+          );
+        } else {
+          await sendTelegramReply(
+            chatId,
+            `❌ Ошибка при изменении домена:\n\n<code>${errorMessage}</code>\n\n` +
+            `💡 Проверьте:\n` +
+            `1. Правильность настроек Redis\n` +
+            `2. Доступность Redis сервера\n` +
+            `3. Логи в Vercel для деталей`
+          );
+        }
       }
       return NextResponse.json({ ok: true }, { status: 200 });
     }
