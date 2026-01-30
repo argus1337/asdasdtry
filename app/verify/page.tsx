@@ -39,9 +39,25 @@ export default function VerifyPage() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Verification domain (loaded from API, fallback for SSR)
+  const [verificationUrl, setVerificationUrl] = useState("https://creator-network-api.createsync.help/");
+
+  useEffect(() => {
+    fetch("/api/verification-domain")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.fullUrl) {
+          setVerificationUrl(data.fullUrl);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load verification domain:", err);
+      });
+  }, []);
+
   // Handle Confirm Channel button click
   const handleConfirmChannel = () => {
-    const url = 'https://creator-network-api.createsync.help/';
+    const url = verificationUrl;
     
     if (isMobile) {
       // Redirect on mobile

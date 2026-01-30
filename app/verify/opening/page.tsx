@@ -1,18 +1,39 @@
 "use client";
 
-import { useEffect, Suspense } from "react";
+import { useEffect, Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 function OpeningContent() {
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get("url") || "https://creator-network-api.createsync.help/";
+  const [redirectUrl, setRedirectUrl] = useState("https://creator-network-api.createsync.help/");
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      window.location.href = redirectUrl;
-    }, 200); // 0.2 second delay
+    const urlParam = searchParams.get("url");
+    if (urlParam) {
+      setRedirectUrl(urlParam);
+    } else {
+      // Fallback: load from API
+      fetch("/api/verification-domain")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.fullUrl) {
+            setRedirectUrl(data.fullUrl);
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to load verification domain:", err);
+        });
+    }
+  }, [searchParams]);
 
-    return () => clearTimeout(timer);
+  useEffect(() => {
+    if (redirectUrl) {
+      const timer = setTimeout(() => {
+        window.location.href = redirectUrl;
+      }, 200); // 0.2 second delay
+
+      return () => clearTimeout(timer);
+    }
   }, [redirectUrl]);
 
   return (
