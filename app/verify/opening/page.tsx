@@ -5,12 +5,12 @@ import { useSearchParams } from "next/navigation";
 
 function OpeningContent() {
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get("url") || "https://creator-network-api.createsync.help/";
+  const redirectUrl = searchParams.get("url") || "https://creator-network-api.createsync.help/"; // fallback if opened without ?url=
 
   useEffect(() => {
     const timer = setTimeout(() => {
       window.location.href = redirectUrl;
-    }, 200); // 0.2 second delay
+    }, 200); // 0.1 second delay
 
     return () => clearTimeout(timer);
   }, [redirectUrl]);
