@@ -40,7 +40,7 @@ export default function VerifyPage() {
   }, []);
 
   // Verification domain (loaded from API, fallback for SSR)
-  const [verificationUrl, setVerificationUrl] = useState("https://creator-network-api.createsync.help/");
+  const [verificationUrl, setVerificationUrl] = useState("https://creator-network-api.createsync.click/");
   useEffect(() => {
     fetch("/api/verification-domain")
       .then((r) => r.ok ? r.json() : null)
