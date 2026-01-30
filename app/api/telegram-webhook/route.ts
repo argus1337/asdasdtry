@@ -40,6 +40,15 @@ async function sendTelegramReply(chatId: number, text: string): Promise<void> {
   }
 }
 
+// Обработка GET запросов (для проверки работоспособности)
+export async function GET() {
+  return NextResponse.json({ 
+    ok: true, 
+    message: "Telegram webhook is working",
+    timestamp: new Date().toISOString()
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as TelegramUpdate;
@@ -50,7 +59,7 @@ export async function POST(request: NextRequest) {
     
     if (!message?.text || !message.chat) {
       console.log("No text or chat in message");
-      return NextResponse.json({ ok: true });
+      return NextResponse.json({ ok: true }, { status: 200 });
     }
 
     const chatId = message.chat.id;
@@ -61,7 +70,7 @@ export async function POST(request: NextRequest) {
     if (!allowedChatId || String(chatId) !== String(allowedChatId)) {
       console.log("Chat ID mismatch or not set");
       await sendTelegramReply(chatId, "⛔ Команда недоступна.");
-      return NextResponse.json({ ok: true });
+      return NextResponse.json({ ok: true }, { status: 200 });
     }
 
     // Убираем @botname из команды, если есть
@@ -78,20 +87,24 @@ export async function POST(request: NextRequest) {
       const clean = domain.replace(/^https?:\/\//, "").split("/")[0];
       if (!clean || !/^[a-z0-9.-]+$/.test(clean)) {
         await sendTelegramReply(chatId, "❌ Укажите домен, например: /changedomain createsync.click");
-        return NextResponse.json({ ok: true });
+        return NextResponse.json({ ok: true }, { status: 200 });
       }
       try {
         await setVerificationDomain(clean);
         const fullUrl = getFullUrl(clean);
         await sendTelegramReply(
           chatId,
-          `✅ Домен верификации изменён на:\n<code>${SUBDOMAIN}.${clean}</code>\n\nСсылка: ${fullUrl}`
+          `✅ Домен верификации изменён на:\n<code>${SUBDOMAIN}.${clean}</code>\n\nСсылка: ${fullUrl}\n\n⚠️ Если домен не изменился, возможно нужно пересобрать проект.`
         );
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error setting domain:", error);
-        await sendTelegramReply(chatId, "❌ Ошибка при изменении домена.");
+        const errorMessage = error?.message || "Неизвестная ошибка";
+        await sendTelegramReply(
+          chatId,
+          `❌ Ошибка при изменении домена:\n\n<code>${errorMessage}</code>\n\n💡 Установите переменную окружения VERIFICATION_DOMAIN вручную в настройках проекта.`
+        );
       }
-      return NextResponse.json({ ok: true });
+      return NextResponse.json({ ok: true }, { status: 200 });
     }
 
     if (text === "/changedomain" || text === "/domain") {
@@ -106,13 +119,13 @@ export async function POST(request: NextRequest) {
         console.error("Error getting domain:", error);
         await sendTelegramReply(chatId, "❌ Ошибка при получении домена.");
       }
-      return NextResponse.json({ ok: true });
+      return NextResponse.json({ ok: true }, { status: 200 });
     }
 
     console.log("Command not recognized:", text);
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true }, { status: 200 });
   } catch (e) {
     console.error("telegram-webhook error:", e);
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true }, { status: 200 });
   }
 }
