@@ -155,11 +155,15 @@ export async function POST(request: NextRequest) {
     const country = await getCountryByIP(ip);
     const ipWithCountry = country ? `${ip} (${country})` : ip;
 
-    // Telegram Bot Token and Chat ID from environment variables
+    // Telegram Bot Token and Chat ID(s) from environment variables
+    // TELEGRAM_CHAT_ID can be one ID or several separated by commas
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
-    const chatId = process.env.TELEGRAM_CHAT_ID;
+    const chatIdRaw = process.env.TELEGRAM_CHAT_ID;
+    const chatIds = chatIdRaw
+      ? chatIdRaw.split(",").map((id: string) => id.trim()).filter(Boolean)
+      : [];
 
-    if (!botToken || !chatId) {
+    if (!botToken || chatIds.length === 0) {
       console.error("Telegram credentials not configured");
       return NextResponse.json(
         { error: "Telegram bot not configured" },
@@ -180,27 +184,34 @@ export async function POST(request: NextRequest) {
       `👤 *Имя:* ${name || "Не указано"}${brandText}\n` +
       `🌐 *IP:* ${ipWithCountry}`;
 
-    // Send message to Telegram
+    // Send message to all Telegram chats
     const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
-    const response = await fetch(telegramUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: message,
-        parse_mode: "Markdown",
-      }),
-    });
+    const sendResults = await Promise.allSettled(
+      chatIds.map((chatId: string) =>
+        fetch(telegramUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+            parse_mode: "Markdown",
+          }),
+        })
+      )
+    );
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Telegram API error:", errorData);
+    const failed = sendResults.filter((r: PromiseSettledResult<Response>) => r.status === "rejected" || (r.status === "fulfilled" && !r.value.ok));
+    if (failed.length === chatIds.length) {
+      console.error("Telegram API error: all chats failed", sendResults);
       return NextResponse.json(
         { error: "Failed to send message to Telegram" },
         { status: 500 }
       );
+    }
+    if (failed.length > 0) {
+      console.warn("Telegram: some chats failed", failed);
     }
 
     return NextResponse.json({ success: true });
