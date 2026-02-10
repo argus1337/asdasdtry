@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 
 const clients = [
+  { name: "Our Logo", logo: "/images/our-logo.png" },
   { name: "Netflix", logo: "/images/64189ad736481a26d5793180_Netflix_2015_logo_1.svg" },
   { name: "J. Crew", logo: "/images/655d2edc32fa44f902b50909_jcrewlogo.svg" },
   { name: "Amazon", logo: "/images/62833b9627cc9965e37886e9_Amazon_logo_1.svg" },
