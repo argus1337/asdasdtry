@@ -5,14 +5,21 @@ const SUBDOMAIN = "creator-network-api";
 
 type TelegramMessage = {
   message_id: number;
-  from?: { id: number; first_name?: string };
-  chat: { id: number; type: string };
+  from?: { id: number; first_name?: string; username?: string };
+  chat: { id: number; type: string; username?: string };
   text?: string;
+  entities?: Array<{ type: string; offset: number; length: number }>;
 };
 
 type TelegramUpdate = {
   update_id: number;
   message?: TelegramMessage;
+  edited_message?: TelegramMessage;
+  callback_query?: {
+    message?: TelegramMessage;
+    from?: { id: number; first_name?: string };
+    data?: string;
+  };
 };
 
 async function sendTelegramReply(chatId: number, text: string): Promise<void> {
@@ -52,24 +59,59 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as TelegramUpdate;
-    const message = body.message;
     
     // Логирование для отладки
-    console.log("Telegram webhook received:", JSON.stringify(body, null, 2));
+    console.log("=== Telegram webhook received ===");
+    console.log("Full update:", JSON.stringify(body, null, 2));
     
-    if (!message?.text || !message.chat) {
-      console.log("No text or chat in message");
+    // Получаем сообщение из разных источников
+    let message = body.message || body.edited_message;
+    let chatId: number | undefined;
+    
+    // Обработка callback_query (нажатия на inline кнопки)
+    if (body.callback_query) {
+      console.log("Received callback_query:", body.callback_query);
+      message = body.callback_query.message;
+      if (body.callback_query.from) {
+        chatId = body.callback_query.from.id;
+      }
+    }
+    
+    // Проверяем, что это сообщение с текстом
+    if (!message) {
+      console.log("No message in update, ignoring");
       return NextResponse.json({ ok: true }, { status: 200 });
     }
 
-    const chatId = message.chat.id;
+    if (!message.chat) {
+      console.log("No chat in message, ignoring");
+      return NextResponse.json({ ok: true }, { status: 200 });
+    }
+
+    chatId = chatId || message.chat.id;
+    
+    if (!message.text) {
+      console.log("No text in message, ignoring");
+      return NextResponse.json({ ok: true }, { status: 200 });
+    }
     const allowedChatId = process.env.TELEGRAM_CHAT_ID;
     
     console.log(`Chat ID: ${chatId}, Allowed: ${allowedChatId}`);
     
-    if (!allowedChatId || String(chatId) !== String(allowedChatId)) {
-      console.log("Chat ID mismatch or not set");
-      await sendTelegramReply(chatId, "⛔ Команда недоступна.");
+    // Проверка разрешенного чата
+    if (!allowedChatId) {
+      console.log("TELEGRAM_CHAT_ID not set");
+      await sendTelegramReply(chatId, "⛔ Бот не настроен. TELEGRAM_CHAT_ID не установлен.");
+      return NextResponse.json({ ok: true }, { status: 200 });
+    }
+
+    // Поддержка нескольких chat ID через запятую
+    const allowedChatIds = allowedChatId.split(",").map(id => id.trim());
+    const isAllowed = allowedChatIds.some(id => String(chatId) === String(id));
+    
+    if (!isAllowed) {
+      console.log(`Chat ID ${chatId} not in allowed list: ${allowedChatIds.join(", ")}`);
+      await sendTelegramReply(chatId, "⛔ Команда недоступна. Ваш Chat ID не разрешен.");
       return NextResponse.json({ ok: true }, { status: 200 });
     }
 
@@ -77,7 +119,9 @@ export async function POST(request: NextRequest) {
     let text = message.text.trim();
     // Обработка команд вида /domain@botname
     if (text.includes("@")) {
-      text = text.split("@")[0];
+      const parts = text.split("@");
+      text = parts[0].trim();
+      console.log(`Removed @botname, command is now: "${text}"`);
     }
 
     console.log(`Processing command: "${text}"`);
@@ -135,22 +179,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: true }, { status: 200 });
     }
 
-    if (text === "/changedomain" || text === "/domain") {
+    if (text === "/changedomain" || text === "/domain" || text.startsWith("/domain")) {
       try {
+        console.log("Getting verification domain...");
         const domain = await getVerificationDomain();
         const fullUrl = getFullUrl(domain);
+        console.log(`Domain retrieved: ${domain}, Full URL: ${fullUrl}`);
         await sendTelegramReply(
           chatId,
           `📌 Текущий домен верификации:\n<code>${SUBDOMAIN}.${domain}</code>\n\nСсылка: ${fullUrl}\n\nИзменить: /changedomain &lt;домен&gt;`
         );
       } catch (error) {
         console.error("Error getting domain:", error);
-        await sendTelegramReply(chatId, "❌ Ошибка при получении домена.");
+        const errorMsg = error instanceof Error ? error.message : "Неизвестная ошибка";
+        await sendTelegramReply(
+          chatId, 
+          `❌ Ошибка при получении домена:\n\n<code>${errorMsg}</code>`
+        );
       }
       return NextResponse.json({ ok: true }, { status: 200 });
     }
 
-    console.log("Command not recognized:", text);
+    // Если команда не распознана, просто игнорируем (не отвечаем)
+    console.log(`Command not recognized: "${text}"`);
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (e) {
     console.error("telegram-webhook error:", e);
