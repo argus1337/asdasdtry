@@ -105,8 +105,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: true }, { status: 200 });
     }
 
-    // Поддержка нескольких chat ID через запятую
-    const allowedChatIds = allowedChatId.split(",").map(id => id.trim());
+    // Поддержка нескольких chat ID (формат: chatId или chatId:threadId — threadId игнорируется для проверки)
+    const allowedChatIds = allowedChatId.split(",").map(entry => {
+      const trimmed = entry.trim();
+      const chatIdPart = trimmed.includes(":") ? trimmed.split(":")[0].trim() : trimmed;
+      return chatIdPart;
+    }).filter(Boolean);
     const isAllowed = allowedChatIds.some(id => String(chatId) === String(id));
     
     if (!isAllowed) {
