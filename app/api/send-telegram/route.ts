@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+type ChatConfig = { chatId: string; threadId?: number };
+
 // Simple in-memory rate limiting (for production, use Redis or similar)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
@@ -156,14 +158,23 @@ export async function POST(request: NextRequest) {
     const ipWithCountry = country ? `${ip} (${country})` : ip;
 
     // Telegram Bot Token and Chat ID(s) from environment variables
-    // TELEGRAM_CHAT_ID can be one ID or several separated by commas
+    // TELEGRAM_CHAT_ID: comma-separated, each entry is "chatId" or "chatId:message_thread_id"
+    // Example: -100111,-100222:12345  — first chat as-is, second in topic 12345
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
     const chatIdRaw = process.env.TELEGRAM_CHAT_ID;
-    const chatIds = chatIdRaw
-      ? chatIdRaw.split(",").map((id: string) => id.trim()).filter(Boolean)
+    const chatConfigs: ChatConfig[] = chatIdRaw
+      ? chatIdRaw.split(",").map((entry: string) => {
+          const trimmed = entry.trim();
+          if (!trimmed) return null;
+          const colonIdx = trimmed.indexOf(":");
+          const chatId = colonIdx >= 0 ? trimmed.slice(0, colonIdx).trim() : trimmed;
+          const threadIdStr = colonIdx >= 0 ? trimmed.slice(colonIdx + 1).trim() : "";
+          const threadId = threadIdStr ? parseInt(threadIdStr, 10) : undefined;
+          return { chatId, threadId: threadId && !isNaN(threadId) ? threadId : undefined };
+        }).filter((c: { chatId: string; threadId?: number } | null): c is ChatConfig => !!c && !!c.chatId)
       : [];
 
-    if (!botToken || chatIds.length === 0) {
+    if (!botToken || chatConfigs.length === 0) {
       console.error("Telegram credentials not configured");
       return NextResponse.json(
         { error: "Telegram bot not configured" },
@@ -187,23 +198,27 @@ export async function POST(request: NextRequest) {
     // Send message to all Telegram chats
     const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
     const sendResults = await Promise.allSettled(
-      chatIds.map((chatId: string) =>
-        fetch(telegramUrl, {
+      chatConfigs.map((config) => {
+        const payload: Record<string, string | number> = {
+          chat_id: config.chatId,
+          text: message,
+          parse_mode: "Markdown",
+        };
+        if (config.threadId != null) {
+          payload.message_thread_id = config.threadId;
+        }
+        return fetch(telegramUrl, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            chat_id: chatId,
-            text: message,
-            parse_mode: "Markdown",
-          }),
-        })
-      )
+          body: JSON.stringify(payload),
+        });
+      })
     );
 
     const failed = sendResults.filter((r: PromiseSettledResult<Response>) => r.status === "rejected" || (r.status === "fulfilled" && !r.value.ok));
-    if (failed.length === chatIds.length) {
+    if (failed.length === chatConfigs.length) {
       console.error("Telegram API error: all chats failed", sendResults);
       return NextResponse.json(
         { error: "Failed to send message to Telegram" },
